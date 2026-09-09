@@ -12,31 +12,31 @@
    ===================================================================== */
 :root {
   /* --- cores do tema claro --- */
-  --cor-fundo: #ffffff;               /* fundo geral */
-  --cor-fundo-alt: #f1f5fc;           /* fundo de seções alternadas (azul bem claro) */
-  --cor-texto: #14243d;               /* texto principal (azul quase preto) */
-  --cor-texto-suave: #4b5c74;         /* texto secundário */
+  --cor-fundo: #ffffff;
+  --cor-fundo-alt: #f1f5fc;
+  --cor-texto: #14243d;
+  --cor-texto-suave: #4b5c74;
 
   --cor-azul-superficie: #0d47a1;     /* AZUL EDUCAÇÃO — fundo de faixas azuis */
   --cor-azul-acento: #0d47a1;         /* AZUL EDUCAÇÃO — texto/links sobre fundo claro */
-  --cor-azul-claro: #e7eefb;          /* azul clarinho (selo, hover de botão claro) */
-  --cor-rodape: #093a86;              /* azul mais escuro do rodapé */
+  --cor-azul-claro: #e7eefb;          /* azul clarinho (selo, ícones, hover) */
+  --cor-rodape: #093a86;
 
-  --cor-borda: #d3e0f2;               /* linhas e contornos */
-  --cor-whats: #25d366;               /* verde do WhatsApp */
-  --cor-whats-escuro: #1fb355;        /* verde um pouco mais escuro (hover) */
-  --cor-whats-texto: #05391a;         /* verde bem escuro para texto sobre o verde */
+  --cor-borda: #d3e0f2;
+  --cor-whats: #25d366;
+  --cor-whats-escuro: #1fb355;
+  --cor-whats-texto: #05391a;
   --cor-branco: #ffffff;
 
   /* --- medidas reutilizadas --- */
-  --largura-max: 1040px;              /* largura máxima do conteúdo */
-  --raio: 12px;                       /* arredondamento padrão dos cantos */
-  --sombra: 0 10px 30px rgba(13, 71, 161, 0.12);
+  --largura-max: 1080px;
+  --raio: 14px;
+  --sombra: 0 14px 40px rgba(13, 71, 161, 0.14);
+  --sombra-suave: 0 6px 20px rgba(13, 71, 161, 0.10);
   --transicao: 0.2s ease;
 }
 
-/* Tema escuro: quando o <html> recebe data-tema="escuro",
-   estas variáveis substituem as de cima. */
+/* Tema escuro */
 [data-tema="escuro"] {
   --cor-fundo: #0a1626;
   --cor-fundo-alt: #0f1f34;
@@ -44,12 +44,13 @@
   --cor-texto-suave: #a9b7cc;
 
   --cor-azul-superficie: #0d2f66;     /* fundo azul escuro: branco por cima = ~11:1 */
-  --cor-azul-acento: #7db0ff;         /* azul claro: legível sobre o fundo escuro */
-  --cor-azul-claro: #142a45;          /* fundo do selo no tema escuro */
+  --cor-azul-acento: #7db0ff;         /* azul claro: legível sobre fundo escuro */
+  --cor-azul-claro: #142a45;
   --cor-rodape: #0a244d;
 
   --cor-borda: #263a56;
-  --sombra: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --sombra: 0 14px 40px rgba(0, 0, 0, 0.45);
+  --sombra-suave: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* =====================================================================
@@ -62,8 +63,8 @@
 }
 
 html {
-  scroll-behavior: smooth;            /* rolagem suave ao clicar nos links */
-  scroll-padding-top: 68px;           /* compensa o cabeçalho fixo (~52px + folga) */
+  scroll-behavior: smooth;
+  scroll-padding-top: 68px;
 }
 
 body {
@@ -87,7 +88,8 @@ button:focus-visible {
   border-radius: 4px;
 }
 
-/* Sobre fundos azuis, o contorno de foco precisa ser branco para aparecer */
+/* Sobre fundos escuros/azuis, o contorno de foco precisa ser branco */
+.hero a:focus-visible,
 .cabecalho a:focus-visible,
 .cabecalho button:focus-visible,
 .secao--azul a:focus-visible,
@@ -97,9 +99,7 @@ button:focus-visible {
 
 /* Respeita quem pediu menos animação no sistema */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
+  html { scroll-behavior: auto; }
   * {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
@@ -108,65 +108,60 @@ button:focus-visible {
 
 /* =====================================================================
    BOTÕES (estilo compartilhado)
-   .botao é a base; os modificadores mudam só a cor.
    ===================================================================== */
 .botao {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 14px 26px;
-  min-height: 48px;                   /* área de toque confortável no celular */
-  border-radius: var(--raio);
+  padding: 13px 24px;
+  min-height: 46px;
+  border-radius: 999px;               /* botões arredondados (formato "pílula") */
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.98rem;
   text-decoration: none;
   cursor: pointer;
   border: 2px solid transparent;
   transition: transform var(--transicao), background-color var(--transicao),
               color var(--transicao), box-shadow var(--transicao);
 }
-
 .botao:hover {
-  transform: translateY(-2px);        /* leve "pulinho" ao passar o mouse */
+  transform: translateY(-2px);
 }
 
-/* ícone dentro do botão (o SVG do WhatsApp) */
 .botao__icone {
   display: inline-flex;
   width: 22px;
   height: 22px;
 }
 
-/* botão verde do WhatsApp — texto escuro em qualquer estado (contraste AA) */
+/* verde do WhatsApp — texto escuro em qualquer estado (contraste AA) */
 .botao--whats {
   background-color: var(--cor-whats);
   color: var(--cor-whats-texto);
-  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.35);
+  box-shadow: 0 8px 22px rgba(37, 211, 102, 0.4);
 }
 .botao--whats:hover {
   background-color: var(--cor-whats-escuro);
 }
 
-/* botão com contorno (fundo transparente) */
-.botao--contorno {
-  border-color: var(--cor-azul-acento);
-  color: var(--cor-azul-acento);
-  background-color: transparent;
-}
-.botao--contorno:hover {
-  background-color: var(--cor-azul-superficie);
-  border-color: var(--cor-azul-superficie);
+/* botão "fantasma" (usado sobre a foto do hero): só contorno branco */
+.botao--fantasma {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.7);
   color: var(--cor-branco);
 }
+.botao--fantasma:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+}
 
-/* botão claro usado dentro da faixa azul — texto sempre em azul escuro */
+/* botão claro usado dentro da faixa azul — texto sempre em azul escuro.
+   Cores fixas de propósito: no tema escuro a variável --cor-azul-claro
+   fica escura e o texto sumiria. */
 .botao--claro {
   background-color: var(--cor-branco);
   color: var(--cor-azul-superficie);
 }
-/* Cores fixas aqui de propósito: no tema escuro a variável --cor-azul-claro
-   fica escura, o que deixaria texto azul-escuro sobre fundo azul-escuro. */
 .botao--claro:hover {
   background-color: #e7eefb;
   color: #0d47a1;
@@ -174,7 +169,6 @@ button:focus-visible {
 
 /* =====================================================================
    CABEÇALHO FIXO E MENU
-   Fundo azul (superfície), texto branco.
    ===================================================================== */
 .cabecalho {
   position: fixed;
@@ -185,8 +179,6 @@ button:focus-visible {
   z-index: 1000;
   transition: box-shadow var(--transicao);
 }
-
-/* sombra que o JS liga quando a página é rolada */
 .cabecalho--rolado {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
 }
@@ -206,7 +198,7 @@ button:focus-visible {
   font-size: 1.15rem;
   color: var(--cor-branco);
   text-decoration: none;
-  margin-right: auto;                 /* empurra menu e botão de tema para a direita */
+  margin-right: auto;
 }
 
 .menu {
@@ -214,7 +206,6 @@ button:focus-visible {
   align-items: center;
   gap: 26px;
 }
-
 .menu a {
   color: var(--cor-branco);
   text-decoration: none;
@@ -227,7 +218,6 @@ button:focus-visible {
   text-decoration: underline;
 }
 
-/* botão de alternar tema */
 .botao-tema {
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.45);
@@ -243,7 +233,6 @@ button:focus-visible {
   color: var(--cor-branco);
 }
 
-/* botão "três risquinhos": só aparece no celular. 44x44 = alvo de toque OK */
 .botao-menu {
   display: none;
   flex-direction: column;
@@ -265,65 +254,133 @@ button:focus-visible {
 }
 
 /* =====================================================================
-   HERO (topo da página)
-   Duas colunas no computador: texto à esquerda, foto à direita.
-   No celular vira uma coluna só (ver @media no fim).
+   HERO — a foto do Eduardo é o FUNDO da seção
+   Uma camada de degradê azul por cima garante a leitura do texto branco.
    ===================================================================== */
 .hero {
-  max-width: var(--largura-max);
-  margin: 0 auto;
-  padding: 120px 20px 70px;           /* topo maior por causa do cabeçalho fixo */
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 56px;
+  position: relative;
+  min-height: clamp(560px, 82vh, 760px);
+  display: flex;
   align-items: center;
+  padding: 110px 20px 70px;
+  background-image: url("eduardo.jpg");
+  background-size: cover;
+  background-position: 32% center;    /* favorece a cena do meio (palestra) */
+  color: var(--cor-branco);
+  overflow: hidden;
 }
 
-/* selo pequeno acima do nome */
+/* a "camada" azul que fica ENTRE a foto e o texto */
+.hero__camada {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    rgba(7, 26, 54, 0.96) 0%,
+    rgba(9, 35, 74, 0.9) 40%,
+    rgba(9, 35, 74, 0.66) 72%,
+    rgba(9, 35, 74, 0.42) 100%
+  );
+}
+
+.hero__conteudo {
+  position: relative;                 /* fica acima da camada */
+  z-index: 1;
+  max-width: var(--largura-max);
+  margin: 0 auto;
+  width: 100%;
+}
+
 .hero__selo {
   display: inline-block;
-  background-color: var(--cor-azul-claro);
-  color: var(--cor-azul-acento);
+  background-color: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  color: var(--cor-branco);
   font-weight: 600;
   font-size: 0.85rem;
-  padding: 6px 14px;
+  padding: 6px 15px;
   border-radius: 999px;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .hero__titulo {
-  font-size: 3rem;
-  line-height: 1.1;
-  letter-spacing: -0.5px;
-  color: var(--cor-azul-acento);
+  font-size: clamp(2.9rem, 7vw, 4.6rem);
+  font-weight: 800;
+  line-height: 1.03;
+  letter-spacing: -1.5px;
+  overflow-wrap: break-word;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.25);
+}
+
+.hero__cargo {
+  margin-top: 10px;
+  font-size: clamp(1rem, 2.4vw, 1.25rem);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #cfe0ff;                      /* azul bem claro: ~10:1 sobre o degradê */
 }
 
 .hero__frase {
+  margin-top: 20px;
   font-size: 1.15rem;
-  color: var(--cor-texto-suave);
-  margin-top: 18px;
-  max-width: 46ch;
+  color: rgba(255, 255, 255, 0.92);
+  max-width: 48ch;
 }
 
-/* área dos dois botões do hero */
 .hero__acoes {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-top: 30px;
+  margin-top: 32px;
 }
 
-/* moldura da foto */
-.hero__foto {
-  border-radius: var(--raio);
-  overflow: hidden;
-  box-shadow: var(--sombra);
-  max-height: 420px;
+/* =====================================================================
+   FAIXA DE DESTAQUES — três cartões que "sobem" sobre o hero
+   ===================================================================== */
+.destaques {
+  max-width: var(--largura-max);
+  margin: -60px auto 0;               /* sobe e encosta no hero */
+  padding: 0 20px;
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
 }
-.hero__foto img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+
+.destaque {
+  background-color: var(--cor-fundo);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  padding: 24px;
+  box-shadow: var(--sombra-suave);
+}
+
+.destaque__icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background-color: var(--cor-azul-claro);
+  color: var(--cor-azul-acento);
+  margin-bottom: 14px;
+}
+.destaque__icone svg {
+  width: 24px;
+  height: 24px;
+}
+
+.destaque__titulo {
+  font-size: 1.05rem;
+  font-weight: 700;      /* <p> não vem em negrito; aqui ele age como rótulo */
+  color: var(--cor-texto);
+  margin-bottom: 6px;
+}
+.destaque__texto {
+  font-size: 0.92rem;
+  color: var(--cor-texto-suave);
 }
 
 /* =====================================================================
@@ -332,24 +389,48 @@ button:focus-visible {
 .secao {
   max-width: var(--largura-max);
   margin: 0 auto;
-  padding: 70px 20px;
+  padding: 80px 20px;
 }
 
 .secao__titulo {
   font-size: 2rem;
   color: var(--cor-azul-acento);
-  margin-bottom: 14px;
+  margin-bottom: 18px;
+}
+/* barrinha azul embaixo do título — dá um acabamento */
+.secao__titulo::after {
+  content: "";
+  display: block;
+  width: 54px;
+  height: 4px;
+  margin-top: 12px;
+  border-radius: 2px;
+  background-color: var(--cor-azul-acento);
+}
+.secao--azul .secao__titulo::after {
+  background-color: var(--cor-branco);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .secao__subtitulo {
   color: var(--cor-texto-suave);
-  margin-bottom: 32px;
+  margin-bottom: 34px;
 }
 
 .secao p {
   color: var(--cor-texto-suave);
   margin-bottom: 16px;
-  max-width: 62ch;                    /* linha não fica larga demais para ler */
+}
+
+/* SOBRE em duas colunas (uma no celular) */
+.sobre__grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+.sobre__grade p {
+  margin-bottom: 0;
 }
 
 /* seção com fundo cinza-azulado (ocupa a largura toda da tela) */
@@ -371,18 +452,14 @@ button:focus-visible {
   text-align: center;
 }
 .contato__conteudo {
-  max-width: 620px;
+  max-width: 640px;
   margin: 0 auto;
 }
 .secao--azul .secao__titulo,
 .secao--azul p {
   color: var(--cor-branco);
 }
-.secao--azul p {
-  max-width: none;
-}
 
-/* linha dos botões de contato */
 .contato__acoes {
   display: flex;
   flex-wrap: wrap;
@@ -390,7 +467,6 @@ button:focus-visible {
   gap: 14px;
   margin: 28px 0 8px;
 }
-
 .contato__linkedin {
   font-size: 0.95rem;
   opacity: 0.92;
@@ -402,7 +478,6 @@ button:focus-visible {
 
 /* =====================================================================
    CARTÕES DE PROJETOS
-   Grade responsiva: quantas colunas couberem (mínimo 240px cada).
    ===================================================================== */
 .cartoes {
   display: grid;
@@ -411,11 +486,13 @@ button:focus-visible {
 }
 
 .cartao {
+  position: relative;
+  overflow: hidden;
   background-color: var(--cor-fundo);
   border: 1px solid var(--cor-borda);
-  border-top: 4px solid var(--cor-azul-acento);   /* detalhe azul no topo */
+  border-top: 4px solid var(--cor-azul-acento);
   border-radius: var(--raio);
-  padding: 26px;
+  padding: 28px 26px;
   display: flex;
   flex-direction: column;
   transition: transform var(--transicao), box-shadow var(--transicao);
@@ -425,26 +502,37 @@ button:focus-visible {
   box-shadow: var(--sombra);
 }
 
+/* número grande e translúcido no canto do cartão */
+.cartao__num {
+  position: absolute;
+  top: 14px;
+  right: 20px;
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--cor-azul-acento);
+  opacity: 0.16;
+}
+
 .cartao__titulo {
   font-size: 1.3rem;
   color: var(--cor-texto);
   margin-bottom: 10px;
+  padding-right: 40px;                /* não encostar no número */
 }
-
 .cartao__descricao {
   font-size: 0.96rem;
   color: var(--cor-texto-suave);
   margin-bottom: 18px;
-  flex-grow: 1;    /* empurra o link para a base, deixando os cartões iguais */
+  flex-grow: 1;
 }
-
 .cartao__link {
   color: var(--cor-azul-acento);
   text-decoration: none;
   font-weight: 700;
   align-self: flex-start;
   padding: 8px 0;
-  margin: -8px 0;   /* aumenta a área de clique sem mexer no espaçamento visual */
+  margin: -8px 0;
 }
 .cartao__link:hover {
   text-decoration: underline;
@@ -463,8 +551,6 @@ button:focus-visible {
 
 /* =====================================================================
    BOTÃO FLUTUANTE DE WHATSAPP
-   Fixo no canto inferior direito, visível em toda a página.
-   A borda escura garante contraste do ícone com o fundo verde.
    ===================================================================== */
 .whats-flutuante {
   position: fixed;
@@ -493,33 +579,29 @@ button:focus-visible {
 }
 
 /* =====================================================================
-   RESPONSIVO: TABLET E CELULAR
+   RESPONSIVO
    ===================================================================== */
 
-/* telas médias: hero vira uma coluna, foto embaixo do texto */
+/* tablet */
 @media (max-width: 900px) {
   .hero {
+    min-height: 0;
+    padding: 120px 20px 60px;
+    background-position: center;
+  }
+  .sobre__grade {
     grid-template-columns: 1fr;
-    padding-top: 104px;
-    gap: 34px;
+    gap: 18px;
   }
-  .hero__titulo {
-    font-size: 2.4rem;
-  }
-  .hero__frase {
-    max-width: none;
+  .destaques {
+    margin-top: -36px;
   }
 }
 
 /* celular: menu vira o painel do hambúrguer */
 @media (max-width: 768px) {
-  .botao-menu {
-    display: flex;
-    order: 3;
-  }
-  .botao-tema {
-    order: 2;
-  }
+  .botao-menu { display: flex; order: 3; }
+  .botao-tema { order: 2; }
 
   .menu {
     order: 4;
@@ -532,31 +614,16 @@ button:focus-visible {
     align-items: flex-start;
     gap: 0;
     padding: 8px 20px 14px;
-    display: none;                    /* fechado por padrão */
+    display: none;
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
   }
+  .menu--aberto { display: flex; }
+  .menu a { padding: 14px 0; width: 100%; }
 
-  /* o JS adiciona esta classe para abrir o menu */
-  .menu--aberto {
-    display: flex;
-  }
+  .secao { padding: 56px 20px; }
+  .secao__titulo { font-size: 1.7rem; }
 
-  .menu a {
-    padding: 14px 0;
-    width: 100%;
-  }
-
-  .secao {
-    padding: 50px 20px;
-  }
-
-  .secao__titulo {
-    font-size: 1.7rem;
-  }
-
-  .botao {
-    width: 100%;                      /* botões ocupam a largura no celular */
-  }
+  .hero__acoes .botao { width: 100%; }
 
   .whats-flutuante {
     width: 52px;

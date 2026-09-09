@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eduardo Carvalho — Especialista em Inteligência Artificial</title>
-  <meta name="description" content="Eduardo Carvalho, especialista em Inteligência Artificial. Cursos práticos de IA para pessoas e equipes. Fale pelo WhatsApp.">
+  <title>Eduardo Carvalho — IA aplicada a Liderança e Vendas</title>
+  <meta name="description" content="Eduardo Carvalho, especialista em IA aplicada a Liderança e Vendas. Cursos e palestras práticas de IA para líderes e times comerciais. Fale pelo WhatsApp.">
 
   <!-- Cor da barra do navegador no celular (uma para cada tema) -->
   <meta name="theme-color" content="#0d47a1" media="(prefers-color-scheme: light)">
@@ -60,15 +60,25 @@
 
   <main>
 
-    <!-- ================= TOPO / APRESENTAÇÃO (HERO) ================= -->
+    <!-- ================= TOPO / APRESENTAÇÃO (HERO) =================
+         A foto é o FUNDO desta seção. Por cima dela colocamos um
+         degradê azul (a "camada" .hero__camada) para o texto branco
+         ficar legível. Assim a imagem não fica "isolada" numa moldura. -->
     <section class="hero" id="topo">
-      <div class="hero__texto">
+      <!-- a camada do degradê também serve de "texto alternativo" da foto de fundo -->
+      <div class="hero__camada" role="img" aria-label="Eduardo Carvalho durante uma palestra"></div>
+
+      <div class="hero__conteudo">
         <p class="hero__selo">Inteligência Artificial na prática</p>
+
         <h1 class="hero__titulo">Eduardo Carvalho</h1>
+        <p class="hero__cargo">Especialista em IA aplicada a Liderança e Vendas</p>
+
         <p class="hero__frase">
-          Especialista em Inteligência Artificial. Ajudo pessoas e empresas a
-          usarem IA de forma prática, ética e produtiva no dia a dia.
+          Ajudo líderes e times comerciais a usarem IA de forma prática, ética
+          e produtiva no dia a dia — em cursos, palestras e treinamentos.
         </p>
+
         <div class="hero__acoes">
           <!-- Botão principal: abre uma conversa no WhatsApp -->
           <a class="botao botao--whats"
@@ -80,33 +90,54 @@
             Falar no WhatsApp
           </a>
           <!-- Botão secundário: rola até a seção de contato -->
-          <a class="botao botao--contorno" href="#contato">Fale comigo</a>
+          <a class="botao botao--fantasma" href="#contato">Outras formas de contato</a>
         </div>
       </div>
+    </section>
 
-      <!-- Foto do Eduardo (montagem de três cenas). O alt descreve a imagem
-           para leitores de tela e para quando ela não carregar. -->
-      <figure class="hero__foto">
-        <img src="eduardo.jpg"
-             alt="Eduardo Carvalho em três cenas: trabalhando no computador, palestrando com um controle na mão e de costas, diante da plateia">
-      </figure>
+    <!-- ================= FAIXA DE DESTAQUES =================
+         Três pontos que resumem a proposta. Deixa o topo menos "vazio". -->
+    <section class="destaques" aria-label="Como são os treinamentos">
+      <div class="destaque">
+        <span class="destaque__icone" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </span>
+        <p class="destaque__titulo">Aulas 100% práticas</p>
+        <p class="destaque__texto">Você sai aplicando ferramentas reais, não só assistindo.</p>
+      </div>
+      <div class="destaque">
+        <span class="destaque__icone" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <p class="destaque__titulo">Para times e turmas abertas</p>
+        <p class="destaque__texto">Treinamentos in-company sob medida ou aulas para você.</p>
+      </div>
+      <div class="destaque">
+        <span class="destaque__icone" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg>
+        </span>
+        <p class="destaque__titulo">Do primeiro prompt ao avançado</p>
+        <p class="destaque__texto">Trilha para quem está começando e para quem já usa IA.</p>
+      </div>
     </section>
 
     <!-- ================= SOBRE ================= -->
     <section class="secao" id="sobre">
       <h2 class="secao__titulo">Sobre</h2>
-      <p>
-        Trabalho com Inteligência Artificial há anos, traduzindo conceitos
-        complexos em aulas simples e diretas. Já treinei profissionais de
-        áreas variadas — do marketing ao jurídico — que precisavam entender
-        o que a IA faz, onde ela ajuda e onde ela ainda erra.
-      </p>
-      <p>
-        Meus cursos partem sempre da prática: você aprende testando
-        ferramentas reais, criando prompts, automatizando tarefas e
-        avaliando resultados com senso crítico. A ideia é que, ao final,
-        você consiga aplicar o que viu já no próximo dia de trabalho.
-      </p>
+      <div class="sobre__grade">
+        <p>
+          Trabalho com Inteligência Artificial há anos, traduzindo conceitos
+          complexos em aulas simples e diretas. Já treinei líderes e equipes
+          comerciais que precisavam entender o que a IA faz, onde ela ajuda a
+          vender e a gerir pessoas, e onde ela ainda erra.
+        </p>
+        <p>
+          Meus cursos partem sempre da prática: você aprende testando
+          ferramentas reais, criando prompts, automatizando tarefas e
+          avaliando resultados com senso crítico. A ideia é que, ao final,
+          você consiga aplicar o que viu já no próximo dia de trabalho.
+        </p>
+      </div>
     </section>
 
     <!-- ================= PROJETOS / CURSOS ================= -->
@@ -117,6 +148,7 @@
       <div class="cartoes">
 
         <article class="cartao">
+          <span class="cartao__num" aria-hidden="true">01</span>
           <h3 class="cartao__titulo">IA na Prática do Zero</h3>
           <p class="cartao__descricao">
             Curso introdutório para quem nunca usou IA. Ferramentas,
@@ -127,6 +159,7 @@
         </article>
 
         <article class="cartao">
+          <span class="cartao__num" aria-hidden="true">02</span>
           <h3 class="cartao__titulo">Automação com IA para Equipes</h3>
           <p class="cartao__descricao">
             Como montar rotinas automáticas que economizam horas por
@@ -137,6 +170,7 @@
         </article>
 
         <article class="cartao">
+          <span class="cartao__num" aria-hidden="true">03</span>
           <h3 class="cartao__titulo">IA Responsável e Segura</h3>
           <p class="cartao__descricao">
             Riscos, limites e boas práticas: privacidade, verificação de
