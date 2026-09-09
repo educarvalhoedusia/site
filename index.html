@@ -4,14 +4,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eduardo Carvalho — Especialista em Inteligência Artificial</title>
-  <meta name="description" content="Site pessoal de Eduardo Carvalho, especialista em Inteligência Artificial. Conheça os cursos e entre em contato.">
+  <meta name="description" content="Eduardo Carvalho, especialista em Inteligência Artificial. Cursos práticos de IA para pessoas e equipes. Fale pelo WhatsApp.">
+
+  <!-- Cor da barra do navegador no celular (uma para cada tema) -->
+  <meta name="theme-color" content="#0d47a1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0d2f66" media="(prefers-color-scheme: dark)">
+
   <!-- Caminho relativo: funciona mesmo se o site estiver numa subpasta -->
   <link rel="stylesheet" href="style.css">
+
+  <script>
+    /* Aplica o tema salvo o mais cedo possível, ainda no <head>, para
+       evitar o "flash" de tela clara antes do script.js carregar.
+       O script.js continua cuidando do botão de alternar. */
+    (function () {
+      try {
+        var tema = localStorage.getItem("tema");
+        if (!tema) {
+          tema = window.matchMedia("(prefers-color-scheme: dark)").matches ? "escuro" : "claro";
+        }
+        if (tema === "escuro") {
+          document.documentElement.setAttribute("data-tema", "escuro");
+        }
+      } catch (e) {
+        /* se o localStorage estiver bloqueado, apenas seguimos no tema claro */
+      }
+    })();
+  </script>
 </head>
 <body>
 
   <!-- ================= CABEÇALHO / MENU ================= -->
-  <header class="cabecalho">
+  <header class="cabecalho" id="cabecalho">
     <div class="cabecalho__conteudo">
       <a href="#topo" class="cabecalho__logo">Eduardo Carvalho</a>
 
@@ -25,33 +49,47 @@
         <a href="#sobre">Sobre</a>
         <a href="#projetos">Projetos</a>
         <a href="#contato">Contato</a>
-        <!-- Botão que alterna entre tema claro e escuro -->
-        <button class="botao-tema" id="botaoTema" aria-label="Alternar tema claro/escuro">
-          <span id="iconeTema">🌙</span>
-        </button>
       </nav>
+
+      <!-- Botão de tema: fica fora do <nav> porque não é um link de navegação -->
+      <button class="botao-tema" id="botaoTema" aria-label="Alternar tema claro e escuro">
+        <span id="iconeTema" aria-hidden="true">🌙</span>
+      </button>
     </div>
   </header>
 
   <main>
 
-    <!-- ================= FAIXA COM A FOTO ================= -->
-    <!-- Imagem larga logo abaixo do cabeçalho. O alt descreve a foto
-         para leitores de tela e para quando a imagem não carregar. -->
-    <div class="faixa-foto" id="topo">
-      <img src="eduardo.jpg"
-           alt="Eduardo Carvalho trabalhando, palestrando e apresentando para uma plateia">
-    </div>
+    <!-- ================= TOPO / APRESENTAÇÃO (HERO) ================= -->
+    <section class="hero" id="topo">
+      <div class="hero__texto">
+        <p class="hero__selo">Inteligência Artificial na prática</p>
+        <h1 class="hero__titulo">Eduardo Carvalho</h1>
+        <p class="hero__frase">
+          Especialista em Inteligência Artificial. Ajudo pessoas e empresas a
+          usarem IA de forma prática, ética e produtiva no dia a dia.
+        </p>
+        <div class="hero__acoes">
+          <!-- Botão principal: abre uma conversa no WhatsApp -->
+          <a class="botao botao--whats"
+             href="https://wa.me/5519991808312?text=Ol%C3%A1%20Eduardo!%20Vim%20pelo%20site%20e%20quero%20saber%20mais%20sobre%20os%20cursos%20de%20IA."
+             target="_blank" rel="noopener">
+            <span class="botao__icone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.86 9.86 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.8c2.17 0 4.2.85 5.74 2.38a8.06 8.06 0 0 1 2.38 5.73c0 4.47-3.64 8.11-8.12 8.11a8.2 8.2 0 0 1-4.12-1.13l-.3-.18-3.12.82.83-3.04-.2-.31a8.05 8.05 0 0 1-1.26-4.36c0-4.47 3.64-8.11 8.12-8.11Zm4.68 10.14c-.06-.11-.24-.18-.5-.31-.26-.13-1.53-.76-1.77-.84-.24-.09-.41-.13-.59.13-.17.26-.67.84-.82 1.01-.15.17-.3.19-.56.06-.26-.13-1.09-.4-2.08-1.28-.77-.69-1.29-1.53-1.44-1.79-.15-.26-.02-.4.11-.53.12-.12.26-.3.39-.46.13-.15.17-.26.26-.43.09-.17.04-.32-.02-.45-.06-.13-.59-1.42-.81-1.94-.21-.51-.43-.44-.59-.45l-.5-.01c-.17 0-.45.06-.68.32-.24.26-.9.88-.9 2.15 0 1.27.92 2.49 1.05 2.66.13.17 1.81 2.76 4.38 3.87.61.26 1.09.42 1.46.54.61.2 1.17.17 1.61.1.49-.07 1.53-.62 1.74-1.22.22-.6.22-1.11.15-1.22Z"/></svg>
+            </span>
+            Falar no WhatsApp
+          </a>
+          <!-- Botão secundário: rola até a seção de contato -->
+          <a class="botao botao--contorno" href="#contato">Fale comigo</a>
+        </div>
+      </div>
 
-    <!-- ================= TOPO / APRESENTAÇÃO ================= -->
-    <section class="hero">
-      <h1 class="hero__titulo">Eduardo Carvalho</h1>
-      <p class="hero__frase">
-        Especialista em Inteligência Artificial. Ajudo pessoas e empresas a
-        usarem IA de forma prática, ética e produtiva no dia a dia.
-      </p>
-      <!-- Este botão leva direto até a seção de contato -->
-      <a href="#contato" class="botao-principal">Fale comigo</a>
+      <!-- Foto do Eduardo (montagem de três cenas). O alt descreve a imagem
+           para leitores de tela e para quando ela não carregar. -->
+      <figure class="hero__foto">
+        <img src="eduardo.jpg"
+             alt="Eduardo Carvalho em três cenas: trabalhando no computador, palestrando com um controle na mão e de costas, diante da plateia">
+      </figure>
     </section>
 
     <!-- ================= SOBRE ================= -->
@@ -72,8 +110,9 @@
     </section>
 
     <!-- ================= PROJETOS / CURSOS ================= -->
-    <section class="secao" id="projetos">
+    <section class="secao secao--cinza" id="projetos">
       <h2 class="secao__titulo">Projetos</h2>
+      <p class="secao__subtitulo">Cursos que já levei para empresas e turmas abertas.</p>
 
       <div class="cartoes">
 
@@ -83,7 +122,8 @@
             Curso introdutório para quem nunca usou IA. Ferramentas,
             prompts e primeiros fluxos de trabalho automatizados.
           </p>
-          <a href="#contato" class="cartao__link">Ver curso</a>
+          <a href="https://wa.me/5519991808312?text=Ol%C3%A1%20Eduardo!%20Quero%20saber%20mais%20sobre%20o%20curso%20IA%20na%20Pr%C3%A1tica%20do%20Zero."
+             target="_blank" rel="noopener" class="cartao__link">Quero este curso →</a>
         </article>
 
         <article class="cartao">
@@ -92,7 +132,8 @@
             Como montar rotinas automáticas que economizam horas por
             semana, com foco em processos de times pequenos e médios.
           </p>
-          <a href="#contato" class="cartao__link">Ver curso</a>
+          <a href="https://wa.me/5519991808312?text=Ol%C3%A1%20Eduardo!%20Quero%20saber%20mais%20sobre%20o%20curso%20Automa%C3%A7%C3%A3o%20com%20IA%20para%20Equipes."
+             target="_blank" rel="noopener" class="cartao__link">Quero este curso →</a>
         </article>
 
         <article class="cartao">
@@ -101,7 +142,8 @@
             Riscos, limites e boas práticas: privacidade, verificação de
             respostas e uso consciente de dados sensíveis.
           </p>
-          <a href="#contato" class="cartao__link">Ver curso</a>
+          <a href="https://wa.me/5519991808312?text=Ol%C3%A1%20Eduardo!%20Quero%20saber%20mais%20sobre%20o%20curso%20IA%20Respons%C3%A1vel%20e%20Segura."
+             target="_blank" rel="noopener" class="cartao__link">Quero este curso →</a>
         </article>
 
       </div>
@@ -109,20 +151,31 @@
 
     <!-- ================= CONTATO ================= -->
     <section class="secao secao--azul" id="contato">
-      <h2 class="secao__titulo">Contato</h2>
-      <p>Quer levar um curso para sua equipe ou tirar dúvidas? Fale comigo:</p>
-      <ul class="lista-contato">
-        <li>
-          E-mail:
-          <a href="mailto:eduardocarvalho@edusia.com.br">eduardocarvalho@edusia.com.br</a>
-        </li>
-        <li>
-          LinkedIn:
-          <a href="https://www.linkedin.com/in/seu-perfil" target="_blank" rel="noopener">
-            linkedin.com/in/seu-perfil
+      <div class="contato__conteudo">
+        <h2 class="secao__titulo">Contato</h2>
+        <p>Quer levar um curso para sua equipe ou tirar dúvidas? Fale comigo:</p>
+
+        <div class="contato__acoes">
+          <a class="botao botao--whats"
+             href="https://wa.me/5519991808312?text=Ol%C3%A1%20Eduardo!%20Vim%20pelo%20site%20e%20quero%20saber%20mais%20sobre%20os%20cursos%20de%20IA."
+             target="_blank" rel="noopener">
+            <span class="botao__icone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.86 9.86 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.8c2.17 0 4.2.85 5.74 2.38a8.06 8.06 0 0 1 2.38 5.73c0 4.47-3.64 8.11-8.12 8.11a8.2 8.2 0 0 1-4.12-1.13l-.3-.18-3.12.82.83-3.04-.2-.31a8.05 8.05 0 0 1-1.26-4.36c0-4.47 3.64-8.11 8.12-8.11Zm4.68 10.14c-.06-.11-.24-.18-.5-.31-.26-.13-1.53-.76-1.77-.84-.24-.09-.41-.13-.59.13-.17.26-.67.84-.82 1.01-.15.17-.3.19-.56.06-.26-.13-1.09-.4-2.08-1.28-.77-.69-1.29-1.53-1.44-1.79-.15-.26-.02-.4.11-.53.12-.12.26-.3.39-.46.13-.15.17-.26.26-.43.09-.17.04-.32-.02-.45-.06-.13-.59-1.42-.81-1.94-.21-.51-.43-.44-.59-.45l-.5-.01c-.17 0-.45.06-.68.32-.24.26-.9.88-.9 2.15 0 1.27.92 2.49 1.05 2.66.13.17 1.81 2.76 4.38 3.87.61.26 1.09.42 1.46.54.61.2 1.17.17 1.61.1.49-.07 1.53-.62 1.74-1.22.22-.6.22-1.11.15-1.22Z"/></svg>
+            </span>
+            (19) 99180-8312
           </a>
-        </li>
-      </ul>
+          <a class="botao botao--claro" href="mailto:eduardocarvalho@edusia.com.br">
+            eduardocarvalho@edusia.com.br
+          </a>
+        </div>
+
+        <!-- LinkedIn: para adicionar, coloque a URL real do perfil aqui:
+        <p class="contato__linkedin">
+          Também estou no
+          <a href="https://www.linkedin.com/in/USUARIO" target="_blank" rel="noopener">LinkedIn</a>.
+        </p>
+        -->
+      </div>
     </section>
 
   </main>
@@ -131,6 +184,15 @@
   <footer class="rodape">
     <p>&copy; <span id="ano"></span> Eduardo Carvalho. Todos os direitos reservados.</p>
   </footer>
+
+  <!-- ================= BOTÃO FLUTUANTE DE WHATSAPP ================= -->
+  <!-- Fica fixo no canto da tela em todas as seções. -->
+  <a class="whats-flutuante"
+     href="https://wa.me/5519991808312?text=Ol%C3%A1%20Eduardo!%20Vim%20pelo%20site%20e%20quero%20saber%20mais%20sobre%20os%20cursos%20de%20IA."
+     target="_blank" rel="noopener"
+     aria-label="Falar com Eduardo Carvalho no WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.86 9.86 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.8c2.17 0 4.2.85 5.74 2.38a8.06 8.06 0 0 1 2.38 5.73c0 4.47-3.64 8.11-8.12 8.11a8.2 8.2 0 0 1-4.12-1.13l-.3-.18-3.12.82.83-3.04-.2-.31a8.05 8.05 0 0 1-1.26-4.36c0-4.47 3.64-8.11 8.12-8.11Zm4.68 10.14c-.06-.11-.24-.18-.5-.31-.26-.13-1.53-.76-1.77-.84-.24-.09-.41-.13-.59.13-.17.26-.67.84-.82 1.01-.15.17-.3.19-.56.06-.26-.13-1.09-.4-2.08-1.28-.77-.69-1.29-1.53-1.44-1.79-.15-.26-.02-.4.11-.53.12-.12.26-.3.39-.46.13-.15.17-.26.26-.43.09-.17.04-.32-.02-.45-.06-.13-.59-1.42-.81-1.94-.21-.51-.43-.44-.59-.45l-.5-.01c-.17 0-.45.06-.68.32-.24.26-.9.88-.9 2.15 0 1.27.92 2.49 1.05 2.66.13.17 1.81 2.76 4.38 3.87.61.26 1.09.42 1.46.54.61.2 1.17.17 1.61.1.49-.07 1.53-.62 1.74-1.22.22-.6.22-1.11.15-1.22Z"/></svg>
+  </a>
 
   <!-- Caminho relativo também aqui -->
   <script src="script.js"></script>
