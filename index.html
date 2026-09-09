@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eduardo Carvalho — Especialista em Inteligência Artificial</title>
+  <meta name="description" content="Site pessoal de Eduardo Carvalho, especialista em Inteligência Artificial. Conheça os cursos e entre em contato.">
+  <!-- Caminho relativo: funciona mesmo se o site estiver numa subpasta -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ================= CABEÇALHO / MENU ================= -->
+  <header class="cabecalho">
+    <div class="cabecalho__conteudo">
+      <a href="#topo" class="cabecalho__logo">Eduardo Carvalho</a>
+
+      <!-- Botão "três risquinhos" (hambúrguer): só aparece no celular via CSS -->
+      <button class="botao-menu" id="botaoMenu" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <!-- Navegação principal -->
+      <nav class="menu" id="menu">
+        <a href="#sobre">Sobre</a>
+        <a href="#projetos">Projetos</a>
+        <a href="#contato">Contato</a>
+        <!-- Botão que alterna entre tema claro e escuro -->
+        <button class="botao-tema" id="botaoTema" aria-label="Alternar tema claro/escuro">
+          <span id="iconeTema">🌙</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ================= TOPO / APRESENTAÇÃO ================= -->
+    <section class="hero" id="topo">
+      <h1 class="hero__titulo">Eduardo Carvalho</h1>
+      <p class="hero__frase">
+        Especialista em Inteligência Artificial. Ajudo pessoas e empresas a
+        usarem IA de forma prática, ética e produtiva no dia a dia.
+      </p>
+      <!-- Este botão leva direto até a seção de contato -->
+      <a href="#contato" class="botao-principal">Fale comigo</a>
+    </section>
+
+    <!-- ================= SOBRE ================= -->
+    <section class="secao" id="sobre">
+      <h2 class="secao__titulo">Sobre</h2>
+      <p>
+        Trabalho com Inteligência Artificial há anos, traduzindo conceitos
+        complexos em aulas simples e diretas. Já treinei profissionais de
+        áreas variadas — do marketing ao jurídico — que precisavam entender
+        o que a IA faz, onde ela ajuda e onde ela ainda erra.
+      </p>
+      <p>
+        Meus cursos partem sempre da prática: você aprende testando
+        ferramentas reais, criando prompts, automatizando tarefas e
+        avaliando resultados com senso crítico. A ideia é que, ao final,
+        você consiga aplicar o que viu já no próximo dia de trabalho.
+      </p>
+    </section>
+
+    <!-- ================= PROJETOS / CURSOS ================= -->
+    <section class="secao" id="projetos">
+      <h2 class="secao__titulo">Projetos</h2>
+
+      <div class="cartoes">
+
+        <article class="cartao">
+          <h3 class="cartao__titulo">IA na Prática do Zero</h3>
+          <p class="cartao__descricao">
+            Curso introdutório para quem nunca usou IA. Ferramentas,
+            prompts e primeiros fluxos de trabalho automatizados.
+          </p>
+          <a href="#contato" class="cartao__link">Ver curso</a>
+        </article>
+
+        <article class="cartao">
+          <h3 class="cartao__titulo">Automação com IA para Equipes</h3>
+          <p class="cartao__descricao">
+            Como montar rotinas automáticas que economizam horas por
+            semana, com foco em processos de times pequenos e médios.
+          </p>
+          <a href="#contato" class="cartao__link">Ver curso</a>
+        </article>
+
+        <article class="cartao">
+          <h3 class="cartao__titulo">IA Responsável e Segura</h3>
+          <p class="cartao__descricao">
+            Riscos, limites e boas práticas: privacidade, verificação de
+            respostas e uso consciente de dados sensíveis.
+          </p>
+          <a href="#contato" class="cartao__link">Ver curso</a>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ================= CONTATO ================= -->
+    <section class="secao" id="contato">
+      <h2 class="secao__titulo">Contato</h2>
+      <p>Quer levar um curso para sua equipe ou tirar dúvidas? Fale comigo:</p>
+      <ul class="lista-contato">
+        <li>
+          E-mail:
+          <a href="mailto:eduardocarvalho@edusia.com.br">eduardocarvalho@edusia.com.br</a>
+        </li>
+        <li>
+          LinkedIn:
+          <a href="https://www.linkedin.com/in/seu-perfil" target="_blank" rel="noopener">
+            linkedin.com/in/seu-perfil
+          </a>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- ================= RODAPÉ ================= -->
+  <footer class="rodape">
+    <p>&copy; <span id="ano"></span> Eduardo Carvalho. Todos os direitos reservados.</p>
+  </footer>
+
+  <!-- Caminho relativo também aqui -->
+  <script src="script.js"></script>
+</body>
+</html>

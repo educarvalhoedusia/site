@@ -1,0 +1,300 @@
+/* =====================================================================
+   VARIÁVEIS DE COR
+   Aqui ficam todas as cores do site. Trocando os valores abaixo,
+   o site inteiro muda de aparência. O tema escuro só redefine
+   essas mesmas variáveis mais adiante.
+   ===================================================================== */
+:root {
+  --cor-fundo: #ffffff;          /* fundo geral da página */
+  --cor-texto: #1a1a1a;          /* cor do texto principal */
+  --cor-texto-suave: #555555;    /* textos secundários */
+  --cor-destaque: #1e66f5;       /* azul: botões e links */
+  --cor-destaque-escuro: #1a52c4;/* azul mais escuro para hover */
+  --cor-cartao: #f5f7fb;         /* fundo dos cartões e do cabeçalho */
+  --cor-borda: #e2e6ee;          /* linhas e contornos sutis */
+}
+
+/* Tema escuro: quando o <html> recebe data-tema="escuro",
+   as variáveis passam a valer estes outros valores. */
+[data-tema="escuro"] {
+  --cor-fundo: #0f1420;
+  --cor-texto: #f0f2f7;
+  --cor-texto-suave: #a9b0c0;
+  --cor-destaque: #5b8dff;
+  --cor-destaque-escuro: #3f6fe0;
+  --cor-cartao: #1a2232;
+  --cor-borda: #2c3648;
+}
+
+/* =====================================================================
+   RESET BÁSICO
+   Zera margens/preenchimentos padrão e faz o padding não "estourar"
+   a largura dos elementos (box-sizing).
+   ===================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Rolagem suave ao clicar em links internos (#sobre, #contato...).
+   O scroll-padding-top evita que o cabeçalho fixo cubra o título. */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+  line-height: 1.6;
+  /* transição suave ao trocar de tema */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* =====================================================================
+   CABEÇALHO FIXO E MENU
+   ===================================================================== */
+.cabecalho {
+  position: fixed;          /* fica sempre visível no topo */
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--cor-cartao);
+  border-bottom: 1px solid var(--cor-borda);
+  z-index: 1000;            /* fica acima do resto do conteúdo */
+}
+
+.cabecalho__conteudo {
+  max-width: 960px;
+  margin: 0 auto;           /* centraliza na tela */
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cabecalho__logo {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--cor-texto);
+  text-decoration: none;
+}
+
+/* Lista de links do menu */
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.menu a {
+  color: var(--cor-texto);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.menu a:hover {
+  color: var(--cor-destaque);
+}
+
+/* Botão de alternar tema (o do sol/lua) */
+.botao-tema {
+  background: none;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* Botão "três risquinhos": escondido no desktop,
+   aparece só no celular (ver @media lá embaixo). */
+.botao-menu {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+}
+
+.botao-menu span {
+  width: 26px;
+  height: 3px;
+  background-color: var(--cor-texto);
+  border-radius: 2px;
+}
+
+/* =====================================================================
+   SEÇÃO DE TOPO (HERO)
+   ===================================================================== */
+.hero {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 160px 20px 80px;  /* espaço extra no topo por causa do header fixo */
+  text-align: center;
+}
+
+.hero__titulo {
+  font-size: 2.6rem;
+  margin-bottom: 16px;
+}
+
+.hero__frase {
+  font-size: 1.15rem;
+  color: var(--cor-texto-suave);
+  margin-bottom: 32px;
+}
+
+/* Botão principal "Fale comigo" */
+.botao-principal {
+  display: inline-block;
+  background-color: var(--cor-destaque);
+  color: #ffffff;
+  text-decoration: none;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.botao-principal:hover {
+  background-color: var(--cor-destaque-escuro);
+}
+
+/* =====================================================================
+   SEÇÕES DE CONTEÚDO (Sobre, Projetos, Contato)
+   ===================================================================== */
+.secao {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  border-top: 1px solid var(--cor-borda);
+}
+
+.secao__titulo {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.secao p {
+  margin-bottom: 16px;
+  color: var(--cor-texto-suave);
+}
+
+/* =====================================================================
+   CARTÕES DE PROJETOS
+   Grade que se adapta: quantas colunas couberem, com no mínimo 220px.
+   ===================================================================== */
+.cartoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.cartao {
+  background-color: var(--cor-cartao);
+  border: 1px solid var(--cor-borda);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.cartao__titulo {
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+  color: var(--cor-texto);
+}
+
+.cartao__descricao {
+  font-size: 0.95rem;
+  color: var(--cor-texto-suave);
+  margin-bottom: 16px;
+}
+
+.cartao__link {
+  color: var(--cor-destaque);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.cartao__link:hover {
+  text-decoration: underline;
+}
+
+/* =====================================================================
+   LISTA DE CONTATO
+   ===================================================================== */
+.lista-contato {
+  list-style: none;
+}
+
+.lista-contato li {
+  margin-bottom: 10px;
+}
+
+.lista-contato a {
+  color: var(--cor-destaque);
+  text-decoration: none;
+}
+
+.lista-contato a:hover {
+  text-decoration: underline;
+}
+
+/* =====================================================================
+   RODAPÉ
+   ===================================================================== */
+.rodape {
+  text-align: center;
+  padding: 40px 20px;
+  border-top: 1px solid var(--cor-borda);
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+}
+
+/* =====================================================================
+   RESPONSIVO: CELULAR (telas de até 768px)
+   O menu horizontal some e vira um painel que abre/fecha
+   ao tocar no botão de três risquinhos.
+   ===================================================================== */
+@media (max-width: 768px) {
+
+  /* mostra o botão hambúrguer */
+  .botao-menu {
+    display: flex;
+  }
+
+  /* o menu fica escondido por padrão, abaixo do cabeçalho */
+  .menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--cor-cartao);
+    border-bottom: 1px solid var(--cor-borda);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    padding: 10px 20px;
+    display: none;   /* fechado */
+  }
+
+  /* quando o JS adiciona a classe "menu--aberto", ele aparece */
+  .menu--aberto {
+    display: flex;
+  }
+
+  .menu a,
+  .menu .botao-tema {
+    padding: 12px 0;
+    width: 100%;
+  }
+
+  .hero__titulo {
+    font-size: 2rem;
+  }
+}
