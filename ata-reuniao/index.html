@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Ata de Reunião</title>
+<style>
+  :root {
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --text: #14181f;
+    --text-secondary: #5b6472;
+    --border: #e3e6ea;
+    --accent: #2f5bea;
+    --accent-contrast: #ffffff;
+    --success: #0f8a5f;
+    --warning: #b7791f;
+    --error: #c8362f;
+    --shadow: 0 1px 2px rgba(20,24,31,0.06), 0 2px 8px rgba(20,24,31,0.06);
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12151b;
+      --card: #1b2029;
+      --text: #eef1f6;
+      --text-secondary: #9aa5b6;
+      --border: #2b313d;
+      --accent: #6690ff;
+      --accent-contrast: #0c1220;
+      --success: #34c48a;
+      --warning: #e0a83f;
+      --error: #ef6b64;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 2px 10px rgba(0,0,0,0.3);
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #12151b;
+    --card: #1b2029;
+    --text: #eef1f6;
+    --text-secondary: #9aa5b6;
+    --border: #2b313d;
+    --accent: #6690ff;
+    --accent-contrast: #0c1220;
+    --success: #34c48a;
+    --warning: #e0a83f;
+    --error: #ef6b64;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 2px 10px rgba(0,0,0,0.3);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  body { min-height: 100vh; }
+
+  a { color: var(--accent); }
+
+  button, input, select, textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .app-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  .app-header h1 {
+    font-size: 1.25rem;
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 20px 16px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 20px;
+  }
+
+  .card h2 {
+    margin: 0 0 16px;
+    font-size: 1.05rem;
+  }
+
+  .card h2 .hint {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .toolbar .spacer { flex: 1 1 auto; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .field label {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .field .desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px 16px;
+  }
+
+  input[type="text"],
+  input[type="date"],
+  input[type="time"],
+  select,
+  textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+
+  textarea {
+    min-height: 72px;
+    resize: vertical;
+  }
+
+  input:hover, select:hover, textarea:hover {
+    border-color: var(--accent);
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+
+  button {
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 10px 16px;
+    min-height: 44px;
+    min-width: 44px;
+    font-weight: 600;
+    transition: background 150ms ease, border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  }
+
+  button:hover { border-color: var(--accent); }
+  button:active { transform: translateY(1px); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-contrast);
+  }
+
+  button.primary:hover { box-shadow: var(--shadow); }
+
+  button.danger {
+    background: var(--card);
+    border-color: var(--error);
+    color: var(--error);
+  }
+
+  button.danger:hover { background: var(--error); color: #fff; }
+
+  button.ghost {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    padding: 8px 10px;
+  }
+
+  button.icon-btn {
+    padding: 6px 10px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 8px 6px 14px;
+    background: var(--bg);
+    min-height: 40px;
+  }
+
+  .tag.ausente { opacity: 0.65; }
+
+  .tag button {
+    border: none;
+    background: transparent;
+    padding: 4px 6px;
+    min-height: 32px;
+    min-width: 32px;
+    border-radius: 6px;
+  }
+
+  .tag .presenca-btn {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--card);
+  }
+
+  .tag.presente .presenca-btn { color: var(--success); border-color: var(--success); }
+  .tag.ausente .presenca-btn { color: var(--text-secondary); }
+
+  .empty-msg {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    padding: 8px 0;
+  }
+
+  .pauta-block, .ata-item {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 12px;
+    background: var(--bg);
+  }
+
+  .pauta-block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .pauta-block-header .num {
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+
+  .pauta-block-actions, .row-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  table.encaminhamentos {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  table.encaminhamentos th {
+    text-align: left;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  table.encaminhamentos td {
+    padding: 8px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border);
+  }
+
+  table.encaminhamentos .table-wrap {
+    overflow-x: auto;
+  }
+
+  .prazo-vencido {
+    color: var(--error);
+    font-weight: 700;
+  }
+
+  .prioridade-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border: 1px solid transparent;
+  }
+
+  .prioridade-alta { color: var(--error); border-color: var(--error); background: color-mix(in srgb, var(--error) 12%, transparent); }
+  .prioridade-media { color: var(--warning); border-color: var(--warning); background: color-mix(in srgb, var(--warning) 12%, transparent); }
+  .prioridade-baixa { color: var(--text-secondary); border-color: var(--border); }
+
+  .table-scroll { overflow-x: auto; }
+
+  .actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .generate-bar {
+    display: flex;
+    justify-content: center;
+    padding: 4px 0;
+  }
+
+  .generate-bar button {
+    font-size: 1.05rem;
+    padding: 14px 32px;
+  }
+
+  #previewCard { display: none; }
+  #previewCard.visible { display: block; }
+
+  #previewContent {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    white-space: normal;
+  }
+
+  #previewContent h3 { margin-top: 0; }
+  #previewContent .meta-line { color: var(--text-secondary); font-size: 0.9rem; margin: 2px 0; }
+  #previewContent ol { padding-left: 22px; }
+  #previewContent li { margin-bottom: 12px; }
+
+  details.saved-list summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: 6px 0;
+  }
+
+  .saved-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-top: 8px;
+    background: var(--bg);
+  }
+
+  .saved-item .info { font-size: 0.9rem; }
+  .saved-item .info .titulo { font-weight: 700; }
+  .saved-item .info .sub { color: var(--text-secondary); font-size: 0.82rem; }
+
+  #statusMsg {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--bg);
+    padding: 10px 18px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    font-size: 0.9rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+    z-index: 100;
+    max-width: 90vw;
+  }
+
+  #statusMsg.show { opacity: 1; }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20,24,31,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 16px;
+  }
+
+  .modal-overlay.visible { display: flex; }
+
+  .modal-box {
+    background: var(--card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    max-width: 420px;
+    width: 100%;
+  }
+
+  .modal-box h3 { margin-top: 0; }
+  .modal-box .actions-row { justify-content: flex-end; margin-top: 18px; }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+  }
+
+  @media print {
+    .app-header, .toolbar, #dadosCard, #participantesCard, #pautaCard,
+    #encaminhamentosCard, .generate-bar, #statusMsg, .modal-overlay,
+    #previewActions, details.saved-list { display: none !important; }
+
+    body { background: #fff; color: #000; }
+    .container { padding: 0; max-width: none; }
+    #previewCard { display: block !important; border: none; box-shadow: none; padding: 0; }
+    #previewContent { border: none; padding: 0; background: #fff; color: #000; }
+  }
+
+  @media (max-width: 480px) {
+    .app-header h1 { font-size: 1.05rem; }
+    .card { padding: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <h1>Gerador de Ata de Reunião</h1>
+  <button type="button" class="theme-toggle icon-btn" id="themeToggleBtn" aria-label="Alternar tema claro/escuro">
+    <span id="themeIcon">🌓</span> <span id="themeLabel">Tema automático</span>
+  </button>
+</header>
+
+<div class="container">
+
+  <div class="card toolbar">
+    <button type="button" id="btnExemplo">Carregar exemplo</button>
+    <div class="spacer"></div>
+    <button type="button" id="btnExportar">Exportar dados</button>
+    <button type="button" id="btnImportar">Importar dados</button>
+    <input type="file" id="fileImportar" accept="application/json" class="visually-hidden" aria-hidden="true">
+    <button type="button" class="danger" id="btnApagarTudo">Apagar tudo</button>
+  </div>
+
+  <div class="card">
+    <details class="saved-list" id="savedListDetails">
+      <summary>Atas salvas (<span id="savedCount">0</span>)</summary>
+      <div id="savedListContainer">
+        <p class="empty-msg">Nenhuma ata gerada ainda.</p>
+      </div>
+    </details>
+  </div>
+
+  <section class="card" id="dadosCard">
+    <h2>Dados da reunião</h2>
+    <div class="grid">
+      <div class="field">
+        <label for="fTitulo">Título da reunião</label>
+        <input type="text" id="fTitulo" placeholder="Ex.: Reunião de planejamento mensal">
+      </div>
+      <div class="field">
+        <label for="fData">Data</label>
+        <input type="date" id="fData">
+      </div>
+      <div class="field">
+        <label for="fHoraInicio">Horário de início</label>
+        <input type="time" id="fHoraInicio">
+      </div>
+      <div class="field">
+        <label for="fHoraFim">Horário de término</label>
+        <input type="time" id="fHoraFim">
+      </div>
+      <div class="field">
+        <label for="fLocal">Local ou plataforma</label>
+        <input type="text" id="fLocal" placeholder="Ex.: Sala 3 / Google Meet">
+      </div>
+      <div class="field">
+        <label for="fResponsavel">Responsável pela ata</label>
+        <input type="text" id="fResponsavel" placeholder="Ex.: Maria Silva">
+      </div>
+      <div class="field">
+        <label for="fProximaReuniao">Próxima reunião <span class="desc">(data, horário e/ou local — opcional)</span></label>
+        <input type="text" id="fProximaReuniao" placeholder="Ex.: 10/10/2026 às 14h, mesmo link">
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="participantesCard">
+    <h2>Participantes
+      <span class="hint">Digite um nome e aperte Enter para adicionar.</span>
+    </h2>
+    <div class="field" style="margin-bottom:0;">
+      <label for="fParticipanteInput" class="visually-hidden">Nome do participante</label>
+      <input type="text" id="fParticipanteInput" placeholder="Nome do participante e Enter">
+    </div>
+    <div class="tags" id="participantesTags"></div>
+  </section>
+
+  <section class="card" id="pautaCard">
+    <h2>Pauta e discussões</h2>
+    <div id="pautaBlocks"></div>
+    <button type="button" id="btnAddPauta">+ Adicionar item de pauta</button>
+  </section>
+
+  <section class="card" id="encaminhamentosCard">
+    <h2>Encaminhamentos</h2>
+    <div class="table-scroll">
+      <table class="encaminhamentos">
+        <thead>
+          <tr>
+            <th>O que fazer</th>
+            <th>Responsável</th>
+            <th>Prazo</th>
+            <th>Prioridade</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="encaminhamentosBody"></tbody>
+      </table>
+    </div>
+    <div class="actions-row">
+      <button type="button" id="btnAddEncaminhamento">+ Adicionar encaminhamento</button>
+    </div>
+  </section>
+
+  <div class="generate-bar">
+    <button type="button" class="primary" id="btnGerarAta">Gerar ata</button>
+  </div>
+
+  <section class="card" id="previewCard">
+    <h2>Prévia da ata</h2>
+    <div class="actions-row" id="previewActions">
+      <button type="button" id="btnCopiar">Copiar para a área de transferência</button>
+      <button type="button" id="btnBaixarTxt">Baixar como .txt</button>
+      <button type="button" id="btnImprimir">Imprimir / Salvar em PDF</button>
+    </div>
+    <div id="previewContent"></div>
+  </section>
+
+</div>
+
+<div id="statusMsg" role="status" aria-live="polite"></div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box" id="modalBox">
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+    <div class="actions-row" id="modalActions"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var STORAGE_DRAFT = "ataReuniao.rascunho";
+  var STORAGE_ATAS = "ataReuniao.atas";
+  var STORAGE_THEME = "ataReuniao.tema";
+
+  var PRIORIDADES = ["Alta", "Média", "Baixa"];
+
+  function hoje() {
+    var d = new Date();
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, "0");
+    var day = String(d.getDate()).padStart(2, "0");
+    return y + "-" + m + "-" + day;
+  }
+
+  function criarEstadoVazio() {
+    return {
+      ataAtualId: null,
+      reuniao: {
+        titulo: "",
+        data: hoje(),
+        horaInicio: "",
+        horaFim: "",
+        local: "",
+        responsavel: "",
+        proximaReuniao: ""
+      },
+      participantes: [],
+      pauta: [],
+      encaminhamentos: []
+    };
+  }
+
+  var state = criarEstadoVazio();
+  var saveTimer = null;
+
+  // ---------- Utilidades ----------
+
+  function nf(v) {
+    if (v === null || v === undefined) return "(não informado)";
+    var s = String(v).trim();
+    return s.length ? s : "(não informado)";
+  }
+
+  function escapeHtml(s) {
+    return String(s === null || s === undefined ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  function formatarDataBR(isoDate) {
+    if (!isoDate) return "(não informado)";
+    var partes = isoDate.split("-");
+    if (partes.length !== 3) return "(não informado)";
+    return partes[2] + "/" + partes[1] + "/" + partes[0];
+  }
+
+  function isVencido(isoDate) {
+    if (!isoDate) return false;
+    return isoDate < hoje();
+  }
+
+  function uid() {
+    return "id" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+
+  function showStatus(msg) {
+    var el = document.getElementById("statusMsg");
+    el.textContent = msg;
+    el.classList.add("show");
+    clearTimeout(showStatus._t);
+    showStatus._t = setTimeout(function () { el.classList.remove("show"); }, 2400);
+  }
+
+  // ---------- Modal genérico ----------
+
+  function openModal(title, bodyHtml, buttons) {
+    var overlay = document.getElementById("modalOverlay");
+    document.getElementById("modalTitle").textContent = title;
+    document.getElementById("modalBody").innerHTML = bodyHtml || "";
+    var actions = document.getElementById("modalActions");
+    actions.innerHTML = "";
+    buttons.forEach(function (b) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = b.label;
+      if (b.variant) btn.classList.add(b.variant);
+      btn.addEventListener("click", function () {
+        closeModal();
+        if (b.onClick) b.onClick();
+      });
+      actions.appendChild(btn);
+    });
+    overlay.classList.add("visible");
+  }
+
+  function closeModal() {
+    document.getElementById("modalOverlay").classList.remove("visible");
+  }
+
+  // ---------- Persistência ----------
+
+  function agendarSalvarRascunho() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(salvarRascunho, 300);
+  }
+
+  function salvarRascunho() {
+    try {
+      localStorage.setItem(STORAGE_DRAFT, JSON.stringify(state));
+    } catch (e) { /* localStorage indisponível: ignora */ }
+  }
+
+  function carregarRascunho() {
+    try {
+      var raw = localStorage.getItem(STORAGE_DRAFT);
+      if (raw) {
+        var loaded = JSON.parse(raw);
+        state = Object.assign(criarEstadoVazio(), loaded);
+        state.reuniao = Object.assign(criarEstadoVazio().reuniao, loaded.reuniao || {});
+        state.participantes = loaded.participantes || [];
+        state.pauta = loaded.pauta || [];
+        state.encaminhamentos = loaded.encaminhamentos || [];
+      }
+    } catch (e) { /* dado corrompido: mantém estado vazio */ }
+  }
+
+  function getAtas() {
+    try {
+      var raw = localStorage.getItem(STORAGE_ATAS);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+
+  function setAtas(lista) {
+    try {
+      localStorage.setItem(STORAGE_ATAS, JSON.stringify(lista));
+    } catch (e) { /* ignora */ }
+  }
+
+  // ---------- Renderização: formulário ----------
+
+  function preencherFormulario() {
+    document.getElementById("fTitulo").value = state.reuniao.titulo || "";
+    document.getElementById("fData").value = state.reuniao.data || "";
+    document.getElementById("fHoraInicio").value = state.reuniao.horaInicio || "";
+    document.getElementById("fHoraFim").value = state.reuniao.horaFim || "";
+    document.getElementById("fLocal").value = state.reuniao.local || "";
+    document.getElementById("fResponsavel").value = state.reuniao.responsavel || "";
+    document.getElementById("fProximaReuniao").value = state.reuniao.proximaReuniao || "";
+    renderParticipantes();
+    renderPauta();
+    renderEncaminhamentos();
+  }
+
+  function bindReuniaoFields() {
+    var map = {
+      fTitulo: "titulo",
+      fData: "data",
+      fHoraInicio: "horaInicio",
+      fHoraFim: "horaFim",
+      fLocal: "local",
+      fResponsavel: "responsavel",
+      fProximaReuniao: "proximaReuniao"
+    };
+    Object.keys(map).forEach(function (id) {
+      document.getElementById(id).addEventListener("input", function () {
+        state.reuniao[map[id]] = this.value;
+        agendarSalvarRascunho();
+      });
+    });
+  }
+
+  // ---------- Participantes ----------
+
+  function renderParticipantes() {
+    var box = document.getElementById("participantesTags");
+    box.innerHTML = "";
+    if (!state.participantes.length) {
+      box.innerHTML = '<p class="empty-msg">Nenhum participante adicionado.</p>';
+      return;
+    }
+    state.participantes.forEach(function (p, idx) {
+      var tag = document.createElement("span");
+      tag.className = "tag " + (p.presente ? "presente" : "ausente");
+
+      var nome = document.createElement("span");
+      nome.textContent = p.nome;
+      tag.appendChild(nome);
+
+      var presencaBtn = document.createElement("button");
+      presencaBtn.type = "button";
+      presencaBtn.className = "presenca-btn";
+      presencaBtn.textContent = p.presente ? "Presente" : "Ausente";
+      presencaBtn.setAttribute("aria-label", "Alternar presença de " + p.nome);
+      presencaBtn.addEventListener("click", function () {
+        state.participantes[idx].presente = !state.participantes[idx].presente;
+        renderParticipantes();
+        renderEncaminhamentosResponsavelOptions();
+        agendarSalvarRascunho();
+      });
+      tag.appendChild(presencaBtn);
+
+      var removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.setAttribute("aria-label", "Remover " + p.nome);
+      removeBtn.textContent = "✕";
+      removeBtn.addEventListener("click", function () {
+        state.participantes.splice(idx, 1);
+        renderParticipantes();
+        renderEncaminhamentosResponsavelOptions();
+        agendarSalvarRascunho();
+      });
+      tag.appendChild(removeBtn);
+
+      box.appendChild(tag);
+    });
+  }
+
+  function bindParticipanteInput() {
+    var input = document.getElementById("fParticipanteInput");
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        var nome = input.value.trim();
+        if (!nome) return;
+        state.participantes.push({ nome: nome, presente: true });
+        input.value = "";
+        renderParticipantes();
+        renderEncaminhamentosResponsavelOptions();
+        agendarSalvarRascunho();
+      }
+    });
+  }
+
+  // ---------- Pauta ----------
+
+  function renderPauta() {
+    var box = document.getElementById("pautaBlocks");
+    box.innerHTML = "";
+    if (!state.pauta.length) {
+      box.innerHTML = '<p class="empty-msg">Nenhum item de pauta adicionado.</p>';
+      return;
+    }
+    state.pauta.forEach(function (item, idx) {
+      var block = document.createElement("div");
+      block.className = "pauta-block";
+
+      var header = document.createElement("div");
+      header.className = "pauta-block-header";
+
+      var num = document.createElement("span");
+      num.className = "num";
+      num.textContent = "Item " + (idx + 1);
+      header.appendChild(num);
+
+      var actions = document.createElement("div");
+      actions.className = "pauta-block-actions";
+
+      var upBtn = makeIconButton("↑", "Mover item " + (idx + 1) + " para cima", function () {
+        if (idx === 0) return;
+        var tmp = state.pauta[idx - 1];
+        state.pauta[idx - 1] = state.pauta[idx];
+        state.pauta[idx] = tmp;
+        renderPauta();
+        agendarSalvarRascunho();
+      });
+      upBtn.disabled = idx === 0;
+
+      var downBtn = makeIconButton("↓", "Mover item " + (idx + 1) + " para baixo", function () {
+        if (idx === state.pauta.length - 1) return;
+        var tmp = state.pauta[idx + 1];
+        state.pauta[idx + 1] = state.pauta[idx];
+        state.pauta[idx] = tmp;
+        renderPauta();
+        agendarSalvarRascunho();
+      });
+      downBtn.disabled = idx === state.pauta.length - 1;
+
+      var removeBtn = makeIconButton("✕", "Remover item " + (idx + 1), function () {
+        state.pauta.splice(idx, 1);
+        renderPauta();
+        agendarSalvarRascunho();
+      });
+
+      actions.appendChild(upBtn);
+      actions.appendChild(downBtn);
+      actions.appendChild(removeBtn);
+      header.appendChild(actions);
+      block.appendChild(header);
+
+      block.appendChild(makeFieldInput("Assunto", item.assunto, function (v) {
+        state.pauta[idx].assunto = v; agendarSalvarRascunho();
+      }, "text"));
+      block.appendChild(makeFieldInput("Resumo da discussão", item.resumo, function (v) {
+        state.pauta[idx].resumo = v; agendarSalvarRascunho();
+      }, "textarea"));
+      block.appendChild(makeFieldInput("Decisão tomada", item.decisao, function (v) {
+        state.pauta[idx].decisao = v; agendarSalvarRascunho();
+      }, "textarea"));
+
+      box.appendChild(block);
+    });
+  }
+
+  function makeIconButton(label, ariaLabel, onClick) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "icon-btn ghost";
+    btn.textContent = label;
+    btn.setAttribute("aria-label", ariaLabel);
+    btn.addEventListener("click", onClick);
+    return btn;
+  }
+
+  function makeFieldInput(labelText, value, onInput, type) {
+    var wrap = document.createElement("div");
+    wrap.className = "field";
+    var label = document.createElement("label");
+    label.textContent = labelText;
+    var inputId = "fld" + uid();
+    label.setAttribute("for", inputId);
+    wrap.appendChild(label);
+
+    var input;
+    if (type === "textarea") {
+      input = document.createElement("textarea");
+    } else {
+      input = document.createElement("input");
+      input.type = "text";
+    }
+    input.id = inputId;
+    input.value = value || "";
+    input.addEventListener("input", function () { onInput(this.value); });
+    wrap.appendChild(input);
+    return wrap;
+  }
+
+  function bindAddPauta() {
+    document.getElementById("btnAddPauta").addEventListener("click", function () {
+      state.pauta.push({ assunto: "", resumo: "", decisao: "" });
+      renderPauta();
+      agendarSalvarRascunho();
+    });
+  }
+
+  // ---------- Encaminhamentos ----------
+
+  function renderEncaminhamentos() {
+    var tbody = document.getElementById("encaminhamentosBody");
+    tbody.innerHTML = "";
+    if (!state.encaminhamentos.length) {
+      var tr = document.createElement("tr");
+      var td = document.createElement("td");
+      td.colSpan = 5;
+      td.className = "empty-msg";
+      td.textContent = "Nenhum encaminhamento adicionado.";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+    state.encaminhamentos.forEach(function (item, idx) {
+      var tr = document.createElement("tr");
+
+      var tdTarefa = document.createElement("td");
+      var inputTarefa = document.createElement("input");
+      inputTarefa.type = "text";
+      inputTarefa.value = item.tarefa || "";
+      inputTarefa.setAttribute("aria-label", "O que fazer (item " + (idx + 1) + ")");
+      inputTarefa.addEventListener("input", function () {
+        state.encaminhamentos[idx].tarefa = this.value; agendarSalvarRascunho();
+      });
+      tdTarefa.appendChild(inputTarefa);
+      tr.appendChild(tdTarefa);
+
+      var tdResp = document.createElement("td");
+      var selectResp = document.createElement("select");
+      selectResp.setAttribute("aria-label", "Responsável (item " + (idx + 1) + ")");
+      selectResp.dataset.idx = idx;
+      selectResp.className = "resp-select";
+      tdResp.appendChild(selectResp);
+      tr.appendChild(tdResp);
+
+      var tdPrazo = document.createElement("td");
+      var inputPrazo = document.createElement("input");
+      inputPrazo.type = "date";
+      inputPrazo.value = item.prazo || "";
+      inputPrazo.setAttribute("aria-label", "Prazo (item " + (idx + 1) + ")");
+      if (isVencido(item.prazo)) inputPrazo.classList.add("prazo-vencido");
+      inputPrazo.addEventListener("input", function () {
+        state.encaminhamentos[idx].prazo = this.value;
+        renderEncaminhamentos();
+        agendarSalvarRascunho();
+      });
+      tdPrazo.appendChild(inputPrazo);
+      tr.appendChild(tdPrazo);
+
+      var tdPrioridade = document.createElement("td");
+      var selectPrio = document.createElement("select");
+      selectPrio.setAttribute("aria-label", "Prioridade (item " + (idx + 1) + ")");
+      PRIORIDADES.forEach(function (p) {
+        var opt = document.createElement("option");
+        opt.value = p;
+        opt.textContent = p;
+        if (item.prioridade === p) opt.selected = true;
+        selectPrio.appendChild(opt);
+      });
+      if (!item.prioridade) {
+        var optDefault = document.createElement("option");
+        optDefault.value = "";
+        optDefault.textContent = "(selecione)";
+        optDefault.selected = true;
+        selectPrio.insertBefore(optDefault, selectPrio.firstChild);
+      }
+      selectPrio.addEventListener("change", function () {
+        state.encaminhamentos[idx].prioridade = this.value;
+        agendarSalvarRascunho();
+      });
+      tdPrioridade.appendChild(selectPrio);
+      tr.appendChild(tdPrioridade);
+
+      var tdActions = document.createElement("td");
+      var removeBtn = makeIconButton("✕", "Remover encaminhamento " + (idx + 1), function () {
+        state.encaminhamentos.splice(idx, 1);
+        renderEncaminhamentos();
+        agendarSalvarRascunho();
+      });
+      tdActions.appendChild(removeBtn);
+      tr.appendChild(tdActions);
+
+      tbody.appendChild(tr);
+    });
+
+    renderEncaminhamentosResponsavelOptions();
+  }
+
+  function renderEncaminhamentosResponsavelOptions() {
+    var selects = document.querySelectorAll(".resp-select");
+    selects.forEach(function (select) {
+      var idx = Number(select.dataset.idx);
+      var current = state.encaminhamentos[idx] ? state.encaminhamentos[idx].responsavel : "";
+      select.innerHTML = "";
+      var optNone = document.createElement("option");
+      optNone.value = "";
+      optNone.textContent = "(não informado)";
+      select.appendChild(optNone);
+      state.participantes.forEach(function (p) {
+        var opt = document.createElement("option");
+        opt.value = p.nome;
+        opt.textContent = p.nome;
+        select.appendChild(opt);
+      });
+      select.value = current || "";
+      if (select.value !== current) {
+        var extra = document.createElement("option");
+        extra.value = current;
+        extra.textContent = current;
+        select.insertBefore(extra, select.firstChild);
+        select.value = current;
+      }
+      select.onchange = function () {
+        state.encaminhamentos[idx].responsavel = this.value;
+        agendarSalvarRascunho();
+      };
+    });
+  }
+
+  function bindAddEncaminhamento() {
+    document.getElementById("btnAddEncaminhamento").addEventListener("click", function () {
+      state.encaminhamentos.push({ tarefa: "", responsavel: "", prazo: "", prioridade: "" });
+      renderEncaminhamentos();
+      agendarSalvarRascunho();
+    });
+  }
+
+  // ---------- Geração da ata ----------
+
+  function gerarTextoPlano() {
+    var r = state.reuniao;
+    var linhas = [];
+    linhas.push("ATA DE REUNIÃO");
+    linhas.push("Título: " + nf(r.titulo));
+    linhas.push("Data: " + formatarDataBR(r.data) +
+      " | Horário: " + nf(r.horaInicio) + " às " + nf(r.horaFim));
+    linhas.push("Local/Plataforma: " + nf(r.local));
+    linhas.push("Responsável pela ata: " + nf(r.responsavel));
+    linhas.push("");
+    linhas.push("PARTICIPANTES");
+    var presentes = state.participantes.filter(function (p) { return p.presente; }).map(function (p) { return p.nome; });
+    var ausentes = state.participantes.filter(function (p) { return !p.presente; }).map(function (p) { return p.nome; });
+    linhas.push("Presentes: " + (presentes.length ? presentes.join(", ") : "(não informado)"));
+    linhas.push("Ausentes: " + (ausentes.length ? ausentes.join(", ") : "(não informado)"));
+    linhas.push("");
+    linhas.push("PAUTA E DECISÕES");
+    if (!state.pauta.length) {
+      linhas.push("(não informado)");
+    } else {
+      state.pauta.forEach(function (item, idx) {
+        linhas.push((idx + 1) + ". " + nf(item.assunto));
+        linhas.push("   Discussão: " + nf(item.resumo));
+        linhas.push("   Decisão: " + nf(item.decisao));
+      });
+    }
+    linhas.push("");
+    linhas.push("ENCAMINHAMENTOS");
+    if (!state.encaminhamentos.length) {
+      linhas.push("(não informado)");
+    } else {
+      state.encaminhamentos.forEach(function (item) {
+        var vencido = isVencido(item.prazo);
+        linhas.push("- " + nf(item.tarefa) +
+          " | Responsável: " + nf(item.responsavel) +
+          " | Prazo: " + formatarDataBR(item.prazo) + (vencido ? " (VENCIDO)" : "") +
+          " | Prioridade: " + nf(item.prioridade));
+      });
+    }
+    linhas.push("");
+    linhas.push("Próxima reunião: " + nf(r.proximaReuniao));
+    return linhas.join("\n");
+  }
+
+  function gerarHtmlPreview() {
+    var r = state.reuniao;
+    var html = "";
+    html += "<h3>" + escapeHtml(nf(r.titulo)) + "</h3>";
+    html += '<p class="meta-line">Data: ' + escapeHtml(formatarDataBR(r.data)) +
+      " &nbsp;|&nbsp; Horário: " + escapeHtml(nf(r.horaInicio)) + " às " + escapeHtml(nf(r.horaFim)) + "</p>";
+    html += '<p class="meta-line">Local/Plataforma: ' + escapeHtml(nf(r.local)) + "</p>";
+    html += '<p class="meta-line">Responsável pela ata: ' + escapeHtml(nf(r.responsavel)) + "</p>";
+
+    html += "<h4>Participantes</h4>";
+    var presentes = state.participantes.filter(function (p) { return p.presente; }).map(function (p) { return p.nome; });
+    var ausentes = state.participantes.filter(function (p) { return !p.presente; }).map(function (p) { return p.nome; });
+    html += "<p><strong>Presentes:</strong> " + escapeHtml(presentes.length ? presentes.join(", ") : "(não informado)") + "</p>";
+    html += "<p><strong>Ausentes:</strong> " + escapeHtml(ausentes.length ? ausentes.join(", ") : "(não informado)") + "</p>";
+
+    html += "<h4>Pauta e decisões</h4>";
+    if (!state.pauta.length) {
+      html += "<p>(não informado)</p>";
+    } else {
+      html += "<ol>";
+      state.pauta.forEach(function (item) {
+        html += "<li><strong>" + escapeHtml(nf(item.assunto)) + "</strong><br>" +
+          "Discussão: " + escapeHtml(nf(item.resumo)) + "<br>" +
+          "Decisão: " + escapeHtml(nf(item.decisao)) + "</li>";
+      });
+      html += "</ol>";
+    }
+
+    html += "<h4>Encaminhamentos</h4>";
+    if (!state.encaminhamentos.length) {
+      html += "<p>(não informado)</p>";
+    } else {
+      html += '<div class="table-wrap"><table class="encaminhamentos"><thead><tr>' +
+        "<th>O que fazer</th><th>Responsável</th><th>Prazo</th><th>Prioridade</th>" +
+        "</tr></thead><tbody>";
+      state.encaminhamentos.forEach(function (item) {
+        var vencido = isVencido(item.prazo);
+        var prioClasse = item.prioridade === "Alta" ? "prioridade-alta" :
+          item.prioridade === "Média" ? "prioridade-media" :
+          item.prioridade === "Baixa" ? "prioridade-baixa" : "";
+        html += "<tr>" +
+          "<td>" + escapeHtml(nf(item.tarefa)) + "</td>" +
+          "<td>" + escapeHtml(nf(item.responsavel)) + "</td>" +
+          "<td" + (vencido ? ' class="prazo-vencido"' : "") + ">" +
+            escapeHtml(formatarDataBR(item.prazo)) + (vencido ? " (vencido)" : "") + "</td>" +
+          "<td><span class=\"prioridade-badge " + prioClasse + "\">" + escapeHtml(nf(item.prioridade)) + "</span></td>" +
+          "</tr>";
+      });
+      html += "</tbody></table></div>";
+    }
+
+    html += "<h4>Próxima reunião</h4>";
+    html += "<p>" + escapeHtml(nf(r.proximaReuniao)) + "</p>";
+
+    return html;
+  }
+
+  function gerarAta() {
+    var textoPlano = gerarTextoPlano();
+    var htmlPreview = gerarHtmlPreview();
+
+    document.getElementById("previewContent").innerHTML = htmlPreview;
+    document.getElementById("previewCard").classList.add("visible");
+    document.getElementById("previewCard").dataset.textoPlano = textoPlano;
+
+    var atas = getAtas();
+    var agora = new Date().toISOString();
+    var snapshot = JSON.parse(JSON.stringify(state));
+
+    if (state.ataAtualId) {
+      var pos = atas.findIndex(function (a) { return a.id === state.ataAtualId; });
+      if (pos >= 0) {
+        atas[pos] = { id: state.ataAtualId, criadoEm: atas[pos].criadoEm, atualizadoEm: agora, estado: snapshot };
+      } else {
+        state.ataAtualId = uid();
+        atas.unshift({ id: state.ataAtualId, criadoEm: agora, atualizadoEm: agora, estado: snapshot });
+      }
+    } else {
+      state.ataAtualId = uid();
+      atas.unshift({ id: state.ataAtualId, criadoEm: agora, atualizadoEm: agora, estado: snapshot });
+    }
+
+    setAtas(atas);
+    renderSavedList();
+    agendarSalvarRascunho();
+    showStatus("Ata gerada com sucesso.");
+
+    document.getElementById("previewCard").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // ---------- Atas salvas ----------
+
+  function renderSavedList() {
+    var atas = getAtas();
+    document.getElementById("savedCount").textContent = atas.length;
+    var container = document.getElementById("savedListContainer");
+    container.innerHTML = "";
+    if (!atas.length) {
+      container.innerHTML = '<p class="empty-msg">Nenhuma ata gerada ainda.</p>';
+      return;
+    }
+    atas.forEach(function (ata) {
+      var item = document.createElement("div");
+      item.className = "saved-item";
+
+      var info = document.createElement("div");
+      info.className = "info";
+      var titulo = document.createElement("div");
+      titulo.className = "titulo";
+      titulo.textContent = nf(ata.estado.reuniao.titulo);
+      var sub = document.createElement("div");
+      sub.className = "sub";
+      sub.textContent = "Data da reunião: " + formatarDataBR(ata.estado.reuniao.data);
+      info.appendChild(titulo);
+      info.appendChild(sub);
+
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = "Usar como ponto de partida";
+      btn.addEventListener("click", function () {
+        usarAtaComoPontoDePartida(ata);
+      });
+
+      item.appendChild(info);
+      item.appendChild(btn);
+      container.appendChild(item);
+    });
+  }
+
+  function usarAtaComoPontoDePartida(ata) {
+    openModal(
+      "Usar ata anterior como ponto de partida",
+      "<p>Os dados atuais do formulário serão substituídos pelos dados da ata \"" +
+        escapeHtml(nf(ata.estado.reuniao.titulo)) + "\". Esta nova ata será salva separadamente ao gerar. Deseja continuar?</p>",
+      [
+        { label: "Cancelar", variant: "ghost" },
+        {
+          label: "Continuar", variant: "primary", onClick: function () {
+            state = JSON.parse(JSON.stringify(ata.estado));
+            state.ataAtualId = null;
+            preencherFormulario();
+            document.getElementById("previewCard").classList.remove("visible");
+            agendarSalvarRascunho();
+            showStatus("Dados carregados como ponto de partida.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        }
+      ]
+    );
+  }
+
+  // ---------- Ações de preview ----------
+
+  function bindPreviewActions() {
+    document.getElementById("btnCopiar").addEventListener("click", function () {
+      var texto = document.getElementById("previewCard").dataset.textoPlano || "";
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(function () {
+          showStatus("Copiado para a área de transferência.");
+        }).catch(function () {
+          showStatus("Não foi possível copiar automaticamente.");
+        });
+      } else {
+        showStatus("Recurso de copiar não suportado neste navegador.");
+      }
+    });
+
+    document.getElementById("btnBaixarTxt").addEventListener("click", function () {
+      var texto = document.getElementById("previewCard").dataset.textoPlano || "";
+      var blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      var nomeArquivo = "ata-" + (state.reuniao.data || hoje()) + ".txt";
+      a.href = url;
+      a.download = nomeArquivo;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showStatus("Arquivo .txt baixado.");
+    });
+
+    document.getElementById("btnImprimir").addEventListener("click", function () {
+      window.print();
+    });
+  }
+
+  // ---------- Exemplo ----------
+
+  function carregarExemplo() {
+    openModal(
+      "Carregar exemplo",
+      "<p>Isso substituirá os dados atuais do formulário por uma reunião fictícia completa. Deseja continuar?</p>",
+      [
+        { label: "Cancelar", variant: "ghost" },
+        {
+          label: "Carregar exemplo", variant: "primary", onClick: function () {
+            var hojeIso = hoje();
+            var passado = new Date();
+            passado.setDate(passado.getDate() - 3);
+            var passadoIso = passado.toISOString().slice(0, 10);
+            var futuro = new Date();
+            futuro.setDate(futuro.getDate() + 10);
+            var futuroIso = futuro.toISOString().slice(0, 10);
+
+            state = {
+              ataAtualId: null,
+              reuniao: {
+                titulo: "Reunião de Planejamento Trimestral",
+                data: hojeIso,
+                horaInicio: "09:00",
+                horaFim: "10:30",
+                local: "Google Meet",
+                responsavel: "Ana Souza",
+                proximaReuniao: formatarDataBR(futuroIso) + " às 09h, mesmo link"
+              },
+              participantes: [
+                { nome: "Ana Souza", presente: true },
+                { nome: "Bruno Lima", presente: true },
+                { nome: "Carla Menezes", presente: false },
+                { nome: "Diego Ferreira", presente: true }
+              ],
+              pauta: [
+                {
+                  assunto: "Resultados do trimestre anterior",
+                  resumo: "Bruno apresentou os números de vendas e retenção, destacando queda de 5% em março.",
+                  decisao: "Investigar causas da queda antes da próxima reunião."
+                },
+                {
+                  assunto: "Planejamento de metas do novo trimestre",
+                  resumo: "Discutida a distribuição de metas por equipe e os recursos necessários.",
+                  decisao: "Metas aprovadas com revisão mensal de acompanhamento."
+                }
+              ],
+              encaminhamentos: [
+                {
+                  tarefa: "Levantar causas da queda de retenção",
+                  responsavel: "Bruno Lima",
+                  prazo: passadoIso,
+                  prioridade: "Alta"
+                },
+                {
+                  tarefa: "Distribuir metas por equipe em planilha",
+                  responsavel: "Diego Ferreira",
+                  prazo: futuroIso,
+                  prioridade: "Média"
+                },
+                {
+                  tarefa: "Agendar revisão mensal com liderança",
+                  responsavel: "Ana Souza",
+                  prazo: futuroIso,
+                  prioridade: "Baixa"
+                }
+              ]
+            };
+
+            preencherFormulario();
+            document.getElementById("previewCard").classList.remove("visible");
+            agendarSalvarRascunho();
+            showStatus("Exemplo carregado. Use \"Apagar tudo\" para limpar quando quiser.");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
+        }
+      ]
+    );
+  }
+
+  // ---------- Exportar / Importar ----------
+
+  function exportarDados() {
+    var payload = {
+      rascunho: state,
+      atas: getAtas(),
+      exportadoEm: new Date().toISOString()
+    };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "ata-reuniao-backup-" + hoje() + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showStatus("Backup exportado.");
+  }
+
+  function bindImportar() {
+    document.getElementById("btnImportar").addEventListener("click", function () {
+      document.getElementById("fileImportar").click();
+    });
+    document.getElementById("fileImportar").addEventListener("change", function (e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        var dados;
+        try {
+          dados = JSON.parse(reader.result);
+        } catch (err) {
+          showStatus("Arquivo inválido. Não foi possível importar.");
+          e.target.value = "";
+          return;
+        }
+        perguntarModoImportacao(dados);
+        e.target.value = "";
+      };
+      reader.readAsText(file);
+    });
+  }
+
+  function perguntarModoImportacao(dados) {
+    openModal(
+      "Importar dados",
+      "<p>Como deseja aplicar os dados importados?</p>" +
+      "<p><strong>Substituir tudo:</strong> apaga os dados atuais e usa somente os importados.<br>" +
+      "<strong>Juntar com o que já existe:</strong> mantém suas atas atuais e acrescenta as importadas.</p>",
+      [
+        { label: "Cancelar", variant: "ghost" },
+        {
+          label: "Juntar com o que já existe", onClick: function () {
+            aplicarImportacao(dados, "mesclar");
+          }
+        },
+        {
+          label: "Substituir tudo", variant: "danger", onClick: function () {
+            aplicarImportacao(dados, "substituir");
+          }
+        }
+      ]
+    );
+  }
+
+  function aplicarImportacao(dados, modo) {
+    var atasImportadas = Array.isArray(dados.atas) ? dados.atas : [];
+    var rascunhoImportado = dados.rascunho || null;
+
+    if (modo === "substituir") {
+      setAtas(atasImportadas);
+      state = rascunhoImportado ? Object.assign(criarEstadoVazio(), rascunhoImportado) : criarEstadoVazio();
+    } else {
+      var atuais = getAtas();
+      var porId = {};
+      atuais.forEach(function (a) { porId[a.id] = a; });
+      atasImportadas.forEach(function (a) { porId[a.id] = a; });
+      var mescladas = Object.keys(porId).map(function (id) { return porId[id]; });
+      setAtas(mescladas);
+      var vazio = criarEstadoVazio().reuniao;
+      var atualVazio = JSON.stringify(state.reuniao) === JSON.stringify(vazio) && !state.participantes.length &&
+        !state.pauta.length && !state.encaminhamentos.length;
+      if (atualVazio && rascunhoImportado) {
+        state = Object.assign(criarEstadoVazio(), rascunhoImportado);
+      }
+    }
+
+    preencherFormulario();
+    document.getElementById("previewCard").classList.remove("visible");
+    renderSavedList();
+    agendarSalvarRascunho();
+    showStatus("Dados importados com sucesso.");
+  }
+
+  // ---------- Apagar tudo ----------
+
+  function apagarTudo() {
+    openModal(
+      "Apagar tudo",
+      "<p>Esta ação apaga <strong>permanentemente</strong> o rascunho atual e todas as atas salvas neste navegador. Não é possível desfazer.</p>",
+      [
+        { label: "Cancelar", variant: "ghost" },
+        {
+          label: "Continuar", variant: "danger", onClick: function () {
+            confirmarApagarTudoFinal();
+          }
+        }
+      ]
+    );
+  }
+
+  function confirmarApagarTudoFinal() {
+    openModal(
+      "Confirmação final",
+      "<p>Tem certeza absoluta? Todos os dados serão perdidos.</p>",
+      [
+        { label: "Cancelar", variant: "ghost" },
+        {
+          label: "Sim, apagar tudo", variant: "danger", onClick: function () {
+            try {
+              localStorage.removeItem(STORAGE_DRAFT);
+              localStorage.removeItem(STORAGE_ATAS);
+            } catch (e) { /* ignora */ }
+            state = criarEstadoVazio();
+            preencherFormulario();
+            document.getElementById("previewCard").classList.remove("visible");
+            renderSavedList();
+            showStatus("Todos os dados foram apagados.");
+          }
+        }
+      ]
+    );
+  }
+
+  // ---------- Tema ----------
+
+  function aplicarTema(tema) {
+    var root = document.documentElement;
+    if (tema === "light" || tema === "dark") {
+      root.setAttribute("data-theme", tema);
+    } else {
+      root.removeAttribute("data-theme");
+    }
+    var label = tema === "light" ? "Tema claro" : tema === "dark" ? "Tema escuro" : "Tema automático";
+    document.getElementById("themeLabel").textContent = label;
+    try { localStorage.setItem(STORAGE_THEME, tema || "auto"); } catch (e) { /* ignora */ }
+  }
+
+  function bindThemeToggle() {
+    var atual = "auto";
+    try { atual = localStorage.getItem(STORAGE_THEME) || "auto"; } catch (e) { /* ignora */ }
+    aplicarTema(atual === "auto" ? null : atual);
+
+    document.getElementById("themeToggleBtn").addEventListener("click", function () {
+      var current = document.documentElement.getAttribute("data-theme");
+      var next = current === "dark" ? "light" : current === "light" ? null : "dark";
+      aplicarTema(next);
+    });
+  }
+
+  // ---------- Inicialização ----------
+
+  function init() {
+    carregarRascunho();
+    preencherFormulario();
+    bindReuniaoFields();
+    bindParticipanteInput();
+    bindAddPauta();
+    bindAddEncaminhamento();
+    bindPreviewActions();
+    bindImportar();
+    bindThemeToggle();
+
+    document.getElementById("btnExemplo").addEventListener("click", carregarExemplo);
+    document.getElementById("btnGerarAta").addEventListener("click", gerarAta);
+    document.getElementById("btnExportar").addEventListener("click", exportarDados);
+    document.getElementById("btnApagarTudo").addEventListener("click", apagarTudo);
+
+    document.getElementById("modalOverlay").addEventListener("click", function (e) {
+      if (e.target === this) closeModal();
+    });
+
+    renderSavedList();
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+
+</body>
+</html>
