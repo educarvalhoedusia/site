@@ -1,0 +1,92 @@
+{
+  "temas": [
+    {
+      "id": 1,
+      "nome": "IA Generativa & Prompting",
+      "descricao": "Aprenda a usar IA generativa para criar textos, ideias e soluções com prompts eficazes.",
+      "icone": "⚡",
+      "videos": [
+        { "titulo": "Introdução a Prompting", "link": "https://youtube.com/watch?v=exemplo-prompting-1" },
+        { "titulo": "Técnicas avançadas de prompt", "link": "https://youtube.com/watch?v=exemplo-prompting-2" }
+      ],
+      "competenciasDesenvolvidas": ["Comunicação com IA", "Escrita estruturada"]
+    },
+    {
+      "id": 2,
+      "nome": "Automação com IA (Make, Zapier, n8n)",
+      "descricao": "Automatize tarefas repetitivas conectando ferramentas de IA a fluxos de trabalho.",
+      "icone": "🤖",
+      "videos": [
+        { "titulo": "Primeiros passos com automação", "link": "https://youtube.com/watch?v=exemplo-automacao-1" },
+        { "titulo": "Montando seu primeiro fluxo", "link": "https://youtube.com/watch?v=exemplo-automacao-2" }
+      ],
+      "competenciasDesenvolvidas": ["Automação de processos", "Pensamento sistêmico"]
+    },
+    {
+      "id": 3,
+      "nome": "IA em Vendas",
+      "descricao": "Use IA para qualificar leads, personalizar abordagens e negociar com mais dados.",
+      "icone": "💼",
+      "videos": [
+        { "titulo": "IA para qualificação de leads", "link": "https://youtube.com/watch?v=exemplo-vendas-1" },
+        { "titulo": "Negociação apoiada por dados", "link": "https://youtube.com/watch?v=exemplo-vendas-2" }
+      ],
+      "competenciasDesenvolvidas": ["Negociação", "Personalização de abordagem"]
+    },
+    {
+      "id": 4,
+      "nome": "IA em RH & Recrutamento",
+      "descricao": "Aplique IA para entender perfis, triar candidatos e melhorar a comunicação com pessoas.",
+      "icone": "🧑‍🤝‍🧑",
+      "videos": [
+        { "titulo": "IA na triagem de candidatos", "link": "https://youtube.com/watch?v=exemplo-rh-1" },
+        { "titulo": "Comunicação empática com apoio de IA", "link": "https://youtube.com/watch?v=exemplo-rh-2" }
+      ],
+      "competenciasDesenvolvidas": ["Empatia", "Escuta ativa"]
+    },
+    {
+      "id": 5,
+      "nome": "Análise de Dados com IA",
+      "descricao": "Transforme planilhas e relatórios em decisões rápidas com apoio de IA.",
+      "icone": "📊",
+      "videos": [
+        { "titulo": "IA para analisar planilhas", "link": "https://youtube.com/watch?v=exemplo-dados-1" },
+        { "titulo": "Gerando relatórios automáticos", "link": "https://youtube.com/watch?v=exemplo-dados-2" }
+      ],
+      "competenciasDesenvolvidas": ["Análise de dados", "Tomada de decisão"]
+    },
+    {
+      "id": 6,
+      "nome": "Produtividade Pessoal com IA",
+      "descricao": "Organize tarefas, priorize o dia e ganhe tempo usando IA no seu dia a dia.",
+      "icone": "🚀",
+      "videos": [
+        { "titulo": "Organizando a rotina com IA", "link": "https://youtube.com/watch?v=exemplo-produtividade-1" },
+        { "titulo": "Priorização inteligente de tarefas", "link": "https://youtube.com/watch?v=exemplo-produtividade-2" }
+      ],
+      "competenciasDesenvolvidas": ["Gestão do tempo", "Priorização"]
+    }
+  ],
+  "mapeamentoDisc": {
+    "D": {
+      "pontosFracos": ["Empatia", "Escuta ativa", "Paciência"],
+      "temasRecomendados": [2, 4, 3],
+      "mensagem": "Como D você é direto e orientado a resultado. Use IA para entender pessoas e agir com mais empatia."
+    },
+    "I": {
+      "pontosFracos": ["Foco", "Execução", "Prazos"],
+      "temasRecomendados": [2, 3, 6],
+      "mensagem": "Como I você é inspirador e cheio de ideias. Use IA para estruturar e executar o que você imagina."
+    },
+    "S": {
+      "pontosFracos": ["Iniciativa", "Assertividade", "Mudança"],
+      "temasRecomendados": [1, 5, 6],
+      "mensagem": "Como S você é confiável e estável. Use IA para inovar com segurança, no seu ritmo."
+    },
+    "C": {
+      "pontosFracos": ["Delegação", "Flexibilidade", "Velocidade"],
+      "temasRecomendados": [2, 5, 3],
+      "mensagem": "Como C você é analítico e preciso. Use IA para processar informação mais rápido e ganhar agilidade."
+    }
+  }
+}
