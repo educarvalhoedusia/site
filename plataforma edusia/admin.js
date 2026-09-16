@@ -4,6 +4,15 @@ const el = (id) => document.getElementById(id);
 let config = { temas: [], mapeamentoDisc: {} };
 let configCarregado = false;
 
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 async function api(path, options = {}) {
   const resp = await fetch(path, {
     ...options,
@@ -171,7 +180,7 @@ async function renderAlunos() {
     const { alunos } = await api('/api/admin/alunos');
     container.innerHTML = alunos.length
       ? `<table class="tabela-alunos"><thead><tr><th>Nome</th><th>Email</th><th>Criado em</th><th>Vídeos assistidos</th></tr></thead><tbody>${alunos
-          .map((a) => `<tr><td>${a.nome}</td><td>${a.email}</td><td>${new Date(a.criadoEm).toLocaleDateString('pt-BR')}</td><td>${a.videosAssistidos}</td></tr>`)
+          .map((a) => `<tr><td>${escapeHtml(a.nome)}</td><td>${escapeHtml(a.email)}</td><td>${new Date(a.criadoEm).toLocaleDateString('pt-BR')}</td><td>${a.videosAssistidos}</td></tr>`)
           .join('')}</tbody></table>`
       : '<p>Nenhum aluno cadastrado ainda.</p>';
   } catch (e) {
