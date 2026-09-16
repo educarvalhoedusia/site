@@ -101,7 +101,7 @@ Node 18+):
 
 ```bash
 npm test
-# equivalente a: node --test tests/
+# equivalente a: node --test
 ```
 
 O restante (telas, formulários, PDF) é verificado manualmente em navegador
