@@ -63,35 +63,36 @@ gerado, independente do que está publicado.
   com o link consegue decodificar e ler nome/email/resultado DISC pelo
   console do navegador. Adequado para acesso individual a conteúdo de
   treinamento — não deve ser usado para dado sensível de alto risco.
-- **Login por email/senha só funciona no navegador onde o aluno usou o link
-  pela primeira vez.** Em outro dispositivo ou navegador, ele precisa do
-  link de novo (não há login universal, pois não há backend).
-- **Progresso das trilhas é local ao navegador** — não sincroniza entre
-  dispositivos do mesmo aluno.
-- **O painel admin não tem senha própria** — a proteção é a URL não ser
-  divulgada. Não use `admin.html` como link público.
+- **O painel admin tem login próprio** — proteja `SESSION_SECRET` e a senha
+  do admin como qualquer outra credencial.
 
-## Como hospedar no Cloudflare Pages
+## Como hospedar no Cloudflare Pages (com backend D1)
 
-1. Crie um projeto no Cloudflare Pages apontando para este diretório (sem
-   build command, sem diretório de output diferente — é um site estático
-   puro).
-2. Cada vez que editar `config.json` (via admin ou manualmente), suba o
-   arquivo atualizado e o Cloudflare Pages redistribui automaticamente.
-3. Gerar acessos de novos alunos (aba "Gerar Acesso") **não** exige esse
-   passo — só a edição de conteúdo (Temas/Mapeamento DISC) exige.
+1. Crie o banco: `npx wrangler d1 create edusia-portal-db` e copie o
+   `database_id` para `wrangler.toml`.
+2. Aplique o schema em produção: `npx wrangler d1 execute edusia-portal-db --remote --file=schema.sql`.
+3. Rode o seed uma única vez: `npm run db:seed:remote`.
+4. No painel do Cloudflare Pages, configure as variáveis de ambiente
+   (Settings → Environment variables): `SESSION_SECRET` (string aleatória
+   longa), `ADMIN_SEED_USER`, `ADMIN_SEED_PASSWORD`.
+5. Conecte o repositório ao Cloudflare Pages (sem build command, diretório
+   raiz do projeto) — o deploy publica o site estático e as Pages Functions
+   juntos automaticamente a cada push.
+6. Editar temas/mapeamento agora é feito direto pelo admin (botão
+   "Salvar") — não requer mais redeploy manual de `config.json`.
 
 ## Rodando localmente
 
-Como o portal usa `fetch('config.json')`, é preciso servir os arquivos por
-HTTP (não abrir `index.html` direto como `file://`). Qualquer servidor
-estático simples funciona, por exemplo:
-
 ```bash
-npx serve .
-# ou
-python -m http.server
+npm install
+npx wrangler d1 create edusia-portal-db   # uma vez, copiar o id para wrangler.toml
+npx wrangler d1 execute edusia-portal-db --local --file=schema.sql
+npm run db:seed
+npx wrangler pages dev . --d1=DB=edusia-portal-db --compatibility-date=2026-09-16
 ```
+
+Crie um `.dev.vars` (não versionado) com `SESSION_SECRET`,
+`ADMIN_SEED_USER` e `ADMIN_SEED_PASSWORD` antes de rodar o `wrangler pages dev`.
 
 ## Testes automatizados
 
