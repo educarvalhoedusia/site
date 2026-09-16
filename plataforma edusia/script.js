@@ -87,6 +87,46 @@ function renderTrilhas(trilhas, aluno) {
   });
 }
 
+function gerarPdf() {
+  if (!planoAtual) return;
+  const erroEl = el('pdf-erro');
+  erroEl.hidden = true;
+  try {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+      throw new Error('jsPDF não carregou');
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const nomesPerfil = { D: 'Dominante (D)', I: 'Influente (I)', S: 'Estável (S)', C: 'Cauteloso (C)' };
+    let y = 20;
+    doc.setFontSize(16);
+    doc.text('Plano de Ação — Portal IA na Prática', 14, y);
+    y += 10;
+    doc.setFontSize(12);
+    doc.text(`Perfil DISC: ${nomesPerfil[planoAtual.perfil]}`, 14, y);
+    y += 8;
+    doc.text(`Pontos de desenvolvimento: ${planoAtual.pontosFracos.join(', ')}`, 14, y);
+    y += 8;
+    const mensagemLinhas = doc.splitTextToSize(planoAtual.mensagem, 180);
+    doc.text(mensagemLinhas, 14, y);
+    y += mensagemLinhas.length * 6 + 4;
+    doc.text('Plano recomendado:', 14, y);
+    y += 8;
+    planoAtual.trilhas.slice(0, 3).forEach((t, i) => {
+      doc.text(`Prioridade ${i + 1}: ${t.nome}`, 18, y);
+      y += 7;
+    });
+    y += 4;
+    doc.text(`Tempo estimado: ${planoAtual.tempoEstimadoHoras}h`, 14, y);
+    y += 7;
+    doc.text(`Meta: completar em ${planoAtual.metaDias} dias`, 14, y);
+    doc.save('plano-de-acao.pdf');
+  } catch (e) {
+    erroEl.textContent = 'Não foi possível gerar o PDF agora. Tente novamente em instantes.';
+    erroEl.hidden = false;
+  }
+}
+
 function tratarToken() {
   const hash = window.location.hash;
   const match = hash.match(/#\/t=(.+)/);
@@ -155,6 +195,7 @@ function iniciarLogout() {
 async function init() {
   iniciarLogin();
   iniciarLogout();
+  el('btn-pdf').addEventListener('click', gerarPdf);
 
   const resultadoToken = tratarToken();
   if (resultadoToken === 'erro') return;
