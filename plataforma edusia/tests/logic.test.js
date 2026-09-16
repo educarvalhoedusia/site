@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { generatePassword, encodeToken, decodeToken, dominantProfile, validateDiscResult } from '../logic.js';
+import { generatePassword, encodeToken, decodeToken, dominantProfile, validateDiscResult, orderThemesByPriority, buildPlanoDeAcao } from '../logic.js';
 
 test('generatePassword returns an 8-character alphanumeric string by default', () => {
   const senha = generatePassword();
@@ -65,4 +65,39 @@ test('validateDiscResult handles completely invalid input without throwing', () 
   const { valid, errors } = validateDiscResult(null);
   assert.equal(valid, false);
   assert.ok(errors.length > 0);
+});
+
+const temasExemplo = [
+  { id: 1, nome: 'Tema Um', descricao: '', icone: '⚡', videos: [{ titulo: 'v1', link: '#' }], competenciasDesenvolvidas: [] },
+  { id: 2, nome: 'Tema Dois', descricao: '', icone: '🤖', videos: [{ titulo: 'v1', link: '#' }, { titulo: 'v2', link: '#' }], competenciasDesenvolvidas: [] },
+  { id: 3, nome: 'Tema Três', descricao: '', icone: '💼', videos: [], competenciasDesenvolvidas: [] },
+];
+
+test('orderThemesByPriority puts recommended temas first, in the given order', () => {
+  const ordenado = orderThemesByPriority(temasExemplo, [3, 1]);
+  assert.deepEqual(ordenado.map((t) => t.id), [3, 1, 2]);
+});
+
+test('orderThemesByPriority ignores recommended ids that do not exist', () => {
+  const ordenado = orderThemesByPriority(temasExemplo, [99, 2]);
+  assert.deepEqual(ordenado.map((t) => t.id), [2, 1, 3]);
+});
+
+test('buildPlanoDeAcao assembles perfil, mensagem, trilhas and estimates', () => {
+  const config = {
+    temas: temasExemplo,
+    mapeamentoDisc: {
+      D: { pontosFracos: ['Empatia'], temasRecomendados: [2, 1], mensagem: 'Mensagem D' },
+      I: { pontosFracos: [], temasRecomendados: [1], mensagem: 'Mensagem I' },
+      S: { pontosFracos: [], temasRecomendados: [1], mensagem: 'Mensagem S' },
+      C: { pontosFracos: [], temasRecomendados: [1], mensagem: 'Mensagem C' },
+    },
+  };
+  const plano = buildPlanoDeAcao(config, { D: 90, I: 10, S: 10, C: 10 });
+  assert.equal(plano.perfil, 'D');
+  assert.deepEqual(plano.pontosFracos, ['Empatia']);
+  assert.equal(plano.mensagem, 'Mensagem D');
+  assert.deepEqual(plano.trilhas.map((t) => t.id), [2, 1, 3]);
+  assert.equal(plano.tempoEstimadoHoras, 8);
+  assert.equal(plano.metaDias, 30);
 });

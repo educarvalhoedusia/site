@@ -69,3 +69,27 @@ export function validateDiscResult(obj) {
   }
   return { valid: errors.length === 0, errors };
 }
+
+export function orderThemesByPriority(temas, temasRecomendados) {
+  const recomendados = temasRecomendados
+    .map((id) => temas.find((t) => t.id === id))
+    .filter(Boolean);
+  const idsRecomendados = new Set(temasRecomendados);
+  const restantes = temas.filter((t) => !idsRecomendados.has(t.id));
+  return [...recomendados, ...restantes];
+}
+
+export function buildPlanoDeAcao(config, disc) {
+  const perfil = dominantProfile(disc);
+  const mapeamento = config.mapeamentoDisc[perfil];
+  const trilhas = orderThemesByPriority(config.temas, mapeamento.temasRecomendados);
+  const horasPorTrilha = 4;
+  return {
+    perfil,
+    pontosFracos: mapeamento.pontosFracos,
+    mensagem: mapeamento.mensagem,
+    trilhas,
+    tempoEstimadoHoras: mapeamento.temasRecomendados.length * horasPorTrilha,
+    metaDias: 30,
+  };
+}
