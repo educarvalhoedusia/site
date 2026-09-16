@@ -2,12 +2,20 @@ import { generatePassword, encodeToken, validateDiscResult } from './logic.js';
 
 const el = (id) => document.getElementById(id);
 let config = { temas: [], mapeamentoDisc: {} };
+let configCarregado = false;
 
 async function carregarConfig() {
-  const resp = await fetch('config.json');
-  config = await resp.json();
-  renderTemas();
-  renderMapeamento();
+  try {
+    const resp = await fetch('config.json');
+    if (!resp.ok) throw new Error('config.json não encontrado');
+    config = await resp.json();
+    configCarregado = true;
+    renderTemas();
+    renderMapeamento();
+  } catch (e) {
+    el('config-erro').textContent = 'Não foi possível carregar config.json. Confira se você está servindo os arquivos por HTTP (não abra admin.html direto como file://) e recarregue a página.';
+    el('config-erro').hidden = false;
+  }
 }
 
 function proximoId() {
@@ -64,8 +72,13 @@ function ligarEventosTemas() {
   container.querySelectorAll('.btn-remove-tema').forEach((btn) => {
     btn.addEventListener('click', (ev) => {
       const idx = Number(ev.target.dataset.tema);
+      const removedId = config.temas[idx].id;
       config.temas.splice(idx, 1);
+      ['D', 'I', 'S', 'C'].forEach((perfil) => {
+        config.mapeamentoDisc[perfil].temasRecomendados = config.mapeamentoDisc[perfil].temasRecomendados.filter((id) => id !== removedId);
+      });
       renderTemas();
+      renderMapeamento();
     });
   });
   container.querySelectorAll('.btn-add-video').forEach((btn) => {
@@ -177,7 +190,7 @@ function iniciarGerarAcesso() {
     const senha = generatePassword();
     const payload = { nome: dados.nome, email: dados.email, senha, disc: dados.disc, geradoEm: new Date().toISOString() };
     const token = encodeToken(payload);
-    const baseUrl = window.location.href.replace(/admin\.html.*$/, 'index.html');
+    const baseUrl = new URL('index.html', window.location.href).href;
     const link = `${baseUrl}#/t=${token}`;
     el('resultado-link').textContent = link;
     el('resultado-email').textContent = dados.email;
@@ -192,13 +205,20 @@ function iniciarGerarAcesso() {
 
 function iniciarDownload() {
   el('btn-download-config').addEventListener('click', () => {
+    if (!configCarregado) {
+      el('config-erro').textContent = 'Nada para baixar — config.json não foi carregado. Recarregue a página servida por HTTP.';
+      el('config-erro').hidden = false;
+      return;
+    }
     const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = 'config.json';
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
   });
 }
 
@@ -212,6 +232,7 @@ el('btn-add-tema').addEventListener('click', () => {
     competenciasDesenvolvidas: [],
   });
   renderTemas();
+  renderMapeamento();
 });
 
 carregarConfig();

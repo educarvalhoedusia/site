@@ -6,6 +6,7 @@ test('generatePassword returns an 8-character alphanumeric string by default', (
   const senha = generatePassword();
   assert.equal(senha.length, 8);
   assert.match(senha, /^[A-Za-z0-9]+$/);
+  assert.doesNotMatch(senha, /[0O1lI]/);
 });
 
 test('generatePassword respects a custom length', () => {
@@ -99,5 +100,16 @@ test('buildPlanoDeAcao assembles perfil, mensagem, trilhas and estimates', () =>
   assert.equal(plano.mensagem, 'Mensagem D');
   assert.deepEqual(plano.trilhas.map((t) => t.id), [2, 1, 3]);
   assert.equal(plano.tempoEstimadoHoras, 8);
+  assert.equal(plano.qtdRecomendados, 2);
   assert.equal(plano.metaDias, 30);
+});
+
+test('the URL-fragment token pattern used by tratarToken extracts and round-trips the token', () => {
+  const payload = { nome: 'Ana', email: 'ana@ex.com', senha: 'abc12345', disc: { D: 1, I: 2, S: 3, C: 4 }, geradoEm: '2026-01-01T00:00:00.000Z' };
+  const token = encodeToken(payload);
+  const hash = `#/t=${token}`;
+  const match = hash.match(/#\/t=(.+)/);
+  assert.ok(match);
+  const decoded = decodeToken(decodeURIComponent(match[1]));
+  assert.deepEqual(decoded, payload);
 });

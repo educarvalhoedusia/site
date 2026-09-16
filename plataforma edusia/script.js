@@ -36,7 +36,7 @@ function renderPlanoAcao(plano) {
   const nomesPerfil = { D: 'Dominante (D)', I: 'Influente (I)', S: 'Estável (S)', C: 'Cauteloso (C)' };
   const container = el('plano-acao');
   const prioridades = plano.trilhas
-    .slice(0, 3)
+    .slice(0, plano.qtdRecomendados)
     .map((t, i) => `<li><strong>PRIORIDADE ${i + 1}:</strong> ${t.nome}</li>`)
     .join('');
   container.innerHTML = `
@@ -112,7 +112,7 @@ function gerarPdf() {
     y += mensagemLinhas.length * 6 + 4;
     doc.text('Plano recomendado:', 14, y);
     y += 8;
-    planoAtual.trilhas.slice(0, 3).forEach((t, i) => {
+    planoAtual.trilhas.slice(0, planoAtual.qtdRecomendados).forEach((t, i) => {
       doc.text(`Prioridade ${i + 1}: ${t.nome}`, 18, y);
       y += 7;
     });
@@ -196,6 +196,7 @@ async function init() {
   iniciarLogin();
   iniciarLogout();
   el('btn-pdf').addEventListener('click', gerarPdf);
+  el('btn-ir-login').addEventListener('click', () => mostrarTela('tela-login'));
 
   const resultadoToken = tratarToken();
   if (resultadoToken === 'erro') return;

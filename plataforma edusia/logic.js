@@ -89,6 +89,7 @@ export function buildPlanoDeAcao(config, disc) {
     pontosFracos: mapeamento.pontosFracos,
     mensagem: mapeamento.mensagem,
     trilhas,
+    qtdRecomendados: mapeamento.temasRecomendados.length,
     tempoEstimadoHoras: mapeamento.temasRecomendados.length * horasPorTrilha,
     metaDias: 30,
   };
