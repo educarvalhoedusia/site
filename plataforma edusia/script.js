@@ -167,10 +167,17 @@ async function renderDashboard() {
     return;
   }
   el('dash-nome').textContent = aluno.nome;
-  renderDiscGrafico(aluno.disc);
-  planoAtual = buildPlanoDeAcao(config, aluno.disc);
-  renderPlanoAcao(planoAtual);
-  renderTrilhas(planoAtual.trilhas);
+  if (aluno.disc) {
+    el('disc-secao').hidden = false;
+    renderDiscGrafico(aluno.disc);
+    planoAtual = buildPlanoDeAcao(config, aluno.disc);
+    renderPlanoAcao(planoAtual);
+    renderTrilhas(planoAtual.trilhas);
+  } else {
+    el('disc-secao').hidden = true;
+    planoAtual = null;
+    renderTrilhas(config.temas);
+  }
   el('usuario-nome').textContent = aluno.nome;
   el('usuario-info').hidden = false;
   mostrarTela('tela-dashboard');

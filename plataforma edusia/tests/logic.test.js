@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { generatePassword, encodeToken, decodeToken, dominantProfile, validateDiscResult, orderThemesByPriority, buildPlanoDeAcao } from '../logic.js';
+import { generatePassword, encodeToken, decodeToken, dominantProfile, validateDiscResult, validateAcessoInput, orderThemesByPriority, buildPlanoDeAcao } from '../logic.js';
 
 test('generatePassword returns an 8-character alphanumeric string by default', () => {
   const senha = generatePassword();
@@ -36,6 +36,13 @@ test('decodeToken throws when required fields are missing', () => {
   assert.throws(() => decodeToken(token), /incompleto/i);
 });
 
+test('decodeToken accepts a payload without disc (DISC is optional)', () => {
+  const payload = { nome: 'Ana', email: 'ana@ex.com', senha: 'abc12345', disc: null, geradoEm: '2026-01-01T00:00:00.000Z' };
+  const decoded = decodeToken(encodeToken(payload));
+  assert.equal(decoded.nome, 'Ana');
+  assert.equal(decoded.disc, null);
+});
+
 test('dominantProfile picks the highest score', () => {
   assert.equal(dominantProfile({ D: 80, I: 40, S: 30, C: 20 }), 'D');
   assert.equal(dominantProfile({ D: 10, I: 90, S: 30, C: 20 }), 'I');
@@ -66,6 +73,37 @@ test('validateDiscResult handles completely invalid input without throwing', () 
   const { valid, errors } = validateDiscResult(null);
   assert.equal(valid, false);
   assert.ok(errors.length > 0);
+});
+
+test('validateAcessoInput accepts nome+email with no disc at all', () => {
+  const { valid, errors } = validateAcessoInput({ nome: 'Ana', email: 'ana@ex.com' });
+  assert.equal(valid, true);
+  assert.deepEqual(errors, []);
+});
+
+test('validateAcessoInput accepts nome+email with disc explicitly null', () => {
+  const { valid, errors } = validateAcessoInput({ nome: 'Ana', email: 'ana@ex.com', disc: null });
+  assert.equal(valid, true);
+  assert.deepEqual(errors, []);
+});
+
+test('validateAcessoInput still requires nome and email', () => {
+  const { valid, errors } = validateAcessoInput({ nome: '', email: 'nao-e-email' });
+  assert.equal(valid, false);
+  assert.ok(errors.some((e) => /nome/.test(e)));
+  assert.ok(errors.some((e) => /email/.test(e)));
+});
+
+test('validateAcessoInput validates disc fields when disc is provided', () => {
+  const { valid, errors } = validateAcessoInput({ nome: 'Ana', email: 'ana@ex.com', disc: { D: 'x', I: 2, S: 3, C: 4 } });
+  assert.equal(valid, false);
+  assert.ok(errors.some((e) => /disc\.D/.test(e)));
+});
+
+test('validateAcessoInput accepts a well-formed disc when provided', () => {
+  const { valid, errors } = validateAcessoInput({ nome: 'Ana', email: 'ana@ex.com', disc: { D: 1, I: 2, S: 3, C: 4 } });
+  assert.equal(valid, true);
+  assert.deepEqual(errors, []);
 });
 
 const temasExemplo = [

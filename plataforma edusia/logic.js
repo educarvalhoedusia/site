@@ -32,7 +32,7 @@ export function decodeToken(token) {
   } catch (e) {
     throw new Error('Token corrompido');
   }
-  if (!payload.nome || !payload.email || !payload.disc) {
+  if (!payload.nome || !payload.email) {
     throw new Error('Token incompleto');
   }
   return payload;
@@ -47,25 +47,45 @@ export function dominantProfile(disc) {
   return best;
 }
 
-export function validateDiscResult(obj) {
-  const errors = [];
-  if (!obj || typeof obj !== 'object') {
-    return { valid: false, errors: ['JSON inválido'] };
-  }
+function validarCamposNomeEmail(obj, errors) {
   if (!obj.nome || typeof obj.nome !== 'string' || !obj.nome.trim()) {
     errors.push('Campo "nome" é obrigatório');
   }
   if (!obj.email || typeof obj.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(obj.email)) {
     errors.push('Campo "email" inválido ou ausente');
   }
-  if (!obj.disc || typeof obj.disc !== 'object') {
+}
+
+function validarCamposDisc(disc, errors) {
+  if (!disc || typeof disc !== 'object') {
     errors.push('Campo "disc" é obrigatório');
-  } else {
-    for (const key of ['D', 'I', 'S', 'C']) {
-      if (typeof obj.disc[key] !== 'number' || Number.isNaN(obj.disc[key])) {
-        errors.push(`Campo "disc.${key}" deve ser numérico`);
-      }
+    return;
+  }
+  for (const key of ['D', 'I', 'S', 'C']) {
+    if (typeof disc[key] !== 'number' || Number.isNaN(disc[key])) {
+      errors.push(`Campo "disc.${key}" deve ser numérico`);
     }
+  }
+}
+
+export function validateDiscResult(obj) {
+  const errors = [];
+  if (!obj || typeof obj !== 'object') {
+    return { valid: false, errors: ['JSON inválido'] };
+  }
+  validarCamposNomeEmail(obj, errors);
+  validarCamposDisc(obj.disc, errors);
+  return { valid: errors.length === 0, errors };
+}
+
+export function validateAcessoInput(obj) {
+  const errors = [];
+  if (!obj || typeof obj !== 'object') {
+    return { valid: false, errors: ['JSON inválido'] };
+  }
+  validarCamposNomeEmail(obj, errors);
+  if (obj.disc !== undefined && obj.disc !== null) {
+    validarCamposDisc(obj.disc, errors);
   }
   return { valid: errors.length === 0, errors };
 }

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "edusia-portal-dev",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["wrangler", "pages", "dev", ".", "--compatibility-date=2026-09-16", "--port=8788"],
+      "port": 8788
+    }
+  ]
+}

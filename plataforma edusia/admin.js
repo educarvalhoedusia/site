@@ -1,4 +1,4 @@
-import { validateDiscResult } from './logic.js';
+import { validateAcessoInput } from './logic.js';
 
 const el = (id) => document.getElementById(id);
 let config = { temas: [], mapeamentoDisc: {} };
@@ -222,15 +222,18 @@ function iniciarGerarAcesso() {
   el('btn-gerar-acesso').addEventListener('click', async () => {
     const erroEl = el('gerar-acesso-erro');
     erroEl.hidden = true;
-    let dados;
-    try {
-      dados = JSON.parse(el('json-disc-input').value);
-    } catch (e) {
-      erroEl.textContent = 'JSON inválido: não foi possível interpretar o texto colado.';
-      erroEl.hidden = false;
-      return;
+    const dados = { nome: el('acesso-nome').value.trim(), email: el('acesso-email').value.trim() };
+    const discTexto = el('json-disc-input').value.trim();
+    if (discTexto) {
+      try {
+        dados.disc = JSON.parse(discTexto);
+      } catch (e) {
+        erroEl.textContent = 'JSON do DISC inválido: não foi possível interpretar o texto colado.';
+        erroEl.hidden = false;
+        return;
+      }
     }
-    const { valid, errors } = validateDiscResult(dados);
+    const { valid, errors } = validateAcessoInput(dados);
     if (!valid) {
       erroEl.textContent = errors.join(' | ');
       erroEl.hidden = false;
@@ -242,6 +245,9 @@ function iniciarGerarAcesso() {
       el('resultado-email').textContent = resultado.email;
       el('resultado-senha').textContent = resultado.senha;
       el('acesso-resultado').hidden = false;
+      el('acesso-nome').value = '';
+      el('acesso-email').value = '';
+      el('json-disc-input').value = '';
     } catch (e) {
       erroEl.textContent = e.message;
       erroEl.hidden = false;

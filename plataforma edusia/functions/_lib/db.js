@@ -60,7 +60,7 @@ export async function listAlunos(db) {
   return results.map((row) => ({
     email: row.email,
     nome: row.nome,
-    disc: JSON.parse(row.disc_json),
+    disc: row.disc_json ? JSON.parse(row.disc_json) : null,
     progresso: JSON.parse(row.progresso_json),
     criadoEm: row.criado_em,
   }));
@@ -73,7 +73,7 @@ export async function getAlunoByEmail(db, email) {
     email: row.email,
     nome: row.nome,
     senhaHash: row.senha_hash,
-    disc: JSON.parse(row.disc_json),
+    disc: row.disc_json ? JSON.parse(row.disc_json) : null,
     progresso: JSON.parse(row.progresso_json),
     criadoEm: row.criado_em,
   };
@@ -82,7 +82,7 @@ export async function getAlunoByEmail(db, email) {
 export async function createAluno(db, { email, nome, senhaHash, disc, criadoEm }) {
   await db.prepare(
     'INSERT INTO alunos (email, nome, senha_hash, disc_json, progresso_json, criado_em) VALUES (?, ?, ?, ?, ?, ?)'
-  ).bind(email, nome, senhaHash, JSON.stringify(disc), '{}', criadoEm).run();
+  ).bind(email, nome, senhaHash, disc ? JSON.stringify(disc) : null, '{}', criadoEm).run();
 }
 
 export async function updateProgresso(db, email, progresso) {

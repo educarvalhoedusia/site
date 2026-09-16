@@ -45,9 +45,13 @@
     </section>
 
     <section id="tab-gerar-acesso" class="admin-secao" hidden>
-      <h2>Gerar acesso a partir do resultado DISC</h2>
-      <label for="json-disc-input">Cole aqui o JSON do resultado DISC</label>
-      <textarea id="json-disc-input" rows="8" placeholder='{"nome":"João Silva","email":"joao@example.com","disc":{"D":80,"I":40,"S":30,"C":20}}'></textarea>
+      <h2>Gerar acesso de aluno</h2>
+      <label for="acesso-nome">Nome</label>
+      <input type="text" id="acesso-nome" placeholder="João Silva" />
+      <label for="acesso-email">Email</label>
+      <input type="email" id="acesso-email" placeholder="joao@example.com" />
+      <label for="json-disc-input">Resultado DISC (opcional — cole o JSON se já tiver o resultado da avaliação)</label>
+      <textarea id="json-disc-input" rows="4" placeholder='{"D":80,"I":40,"S":30,"C":20}'></textarea>
       <p id="gerar-acesso-erro" class="erro" hidden></p>
       <button id="btn-gerar-acesso" class="btn btn-primario">Gerar link do aluno</button>
       <div id="acesso-resultado" class="acesso-resultado" hidden>

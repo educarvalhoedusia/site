@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS alunos (
   email TEXT PRIMARY KEY,
   nome TEXT NOT NULL,
   senha_hash TEXT NOT NULL,
-  disc_json TEXT NOT NULL,
+  disc_json TEXT,
   progresso_json TEXT NOT NULL DEFAULT '{}',
   criado_em TEXT NOT NULL
 );
