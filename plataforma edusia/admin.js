@@ -1,3 +1,5 @@
+import { generatePassword, encodeToken, validateDiscResult } from './logic.js';
+
 const el = (id) => document.getElementById(id);
 let config = { temas: [], mapeamentoDisc: {} };
 
@@ -154,6 +156,52 @@ function iniciarTabs() {
   });
 }
 
+function iniciarGerarAcesso() {
+  el('btn-gerar-acesso').addEventListener('click', () => {
+    const erroEl = el('gerar-acesso-erro');
+    erroEl.hidden = true;
+    let dados;
+    try {
+      dados = JSON.parse(el('json-disc-input').value);
+    } catch (e) {
+      erroEl.textContent = 'JSON inválido: não foi possível interpretar o texto colado.';
+      erroEl.hidden = false;
+      return;
+    }
+    const { valid, errors } = validateDiscResult(dados);
+    if (!valid) {
+      erroEl.textContent = errors.join(' | ');
+      erroEl.hidden = false;
+      return;
+    }
+    const senha = generatePassword();
+    const payload = { nome: dados.nome, email: dados.email, senha, disc: dados.disc, geradoEm: new Date().toISOString() };
+    const token = encodeToken(payload);
+    const baseUrl = window.location.href.replace(/admin\.html.*$/, 'index.html');
+    const link = `${baseUrl}#/t=${token}`;
+    el('resultado-link').textContent = link;
+    el('resultado-email').textContent = dados.email;
+    el('resultado-senha').textContent = senha;
+    el('acesso-resultado').hidden = false;
+  });
+
+  el('btn-copiar-link').addEventListener('click', () => {
+    navigator.clipboard.writeText(el('resultado-link').textContent);
+  });
+}
+
+function iniciarDownload() {
+  el('btn-download-config').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'config.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
 el('btn-add-tema').addEventListener('click', () => {
   config.temas.push({
     id: proximoId(),
@@ -168,3 +216,5 @@ el('btn-add-tema').addEventListener('click', () => {
 
 carregarConfig();
 iniciarTabs();
+iniciarGerarAcesso();
+iniciarDownload();
