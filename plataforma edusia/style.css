@@ -1,0 +1,269 @@
+:root {
+  --azul-primario: #1d4ed8;
+  --azul-escuro: #1e3a8a;
+  --cinza-claro: #f3f4f6;
+  --cinza-medio: #6b7280;
+  --cinza-escuro: #111827;
+  --branco: #ffffff;
+  --vermelho: #dc2626;
+  --verde: #16a34a;
+  --sombra: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --raio: 10px;
+  --fonte: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fonte);
+  color: var(--cinza-escuro);
+  background: var(--cinza-claro);
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--azul-escuro);
+  color: var(--branco);
+  padding: 16px 24px;
+}
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.usuario-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.card {
+  background: var(--branco);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.login-card {
+  max-width: 400px;
+  margin: 48px auto;
+}
+
+label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 4px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.btn {
+  display: inline-block;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primario {
+  background: var(--azul-primario);
+  color: var(--branco);
+}
+
+.btn-secundario {
+  background: var(--cinza-claro);
+  color: var(--azul-escuro);
+  border: 1px solid var(--azul-primario);
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--azul-primario);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+.btn-download {
+  position: sticky;
+  bottom: 16px;
+}
+
+.erro {
+  color: var(--vermelho);
+  font-size: 0.9rem;
+}
+
+.disc-grafico {
+  margin: 16px 0;
+}
+
+.disc-linha {
+  display: grid;
+  grid-template-columns: 24px 1fr 40px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.disc-letra {
+  font-weight: 700;
+}
+
+.disc-barra-fundo {
+  background: var(--cinza-claro);
+  border-radius: 6px;
+  height: 14px;
+  overflow: hidden;
+}
+
+.disc-barra {
+  background: var(--azul-primario);
+  height: 100%;
+}
+
+.disc-valor {
+  text-align: right;
+  color: var(--cinza-medio);
+}
+
+.plano-acao {
+  margin: 16px 0;
+}
+
+.prioridades {
+  padding-left: 20px;
+}
+
+.trilhas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.trilha-card {
+  background: var(--branco);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 20px;
+}
+
+.trilha-progresso {
+  color: var(--cinza-medio);
+  font-size: 0.9rem;
+}
+
+.videos-lista {
+  list-style: none;
+  padding: 0;
+}
+
+.video-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-top: 1px solid var(--cinza-claro);
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tab-btn {
+  background: var(--branco);
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.tab-btn.ativo {
+  background: var(--azul-primario);
+  color: var(--branco);
+  border-color: var(--azul-primario);
+}
+
+.admin-secao {
+  margin-bottom: 24px;
+}
+
+.aviso-card {
+  background: #fef9c3;
+  border: 1px solid #eab308;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+}
+
+.tema-editor,
+.perfil-editor {
+  margin-bottom: 16px;
+}
+
+.video-editor {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.videos-editor {
+  margin: 12px 0;
+}
+
+.checkbox-tema {
+  display: block;
+  font-weight: 400;
+  margin-bottom: 4px;
+}
+
+.acesso-resultado {
+  background: var(--cinza-claro);
+  border-radius: 6px;
+  padding: 16px;
+  margin-top: 16px;
+  word-break: break-all;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 16px 12px 48px;
+  }
+
+  .video-editor {
+    grid-template-columns: 1fr;
+  }
+}
