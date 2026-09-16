@@ -1,50 +1,35 @@
-const ALUNO_PREFIX = 'edusia_aluno_';
-const SESSAO_KEY = 'edusia_sessao';
+let alunoAtual = null;
 
-export function saveAluno(payload) {
-  const existente = getAluno(payload.email);
-  const progresso = existente ? existente.progresso : {};
-  const record = { ...payload, progresso };
-  localStorage.setItem(ALUNO_PREFIX + payload.email, JSON.stringify(record));
-  return record;
+export function setAlunoAtual(aluno) {
+  alunoAtual = aluno;
 }
 
-export function getAluno(email) {
-  const raw = localStorage.getItem(ALUNO_PREFIX + email);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch (e) {
-    return null;
-  }
+export function getAlunoAtual() {
+  return alunoAtual;
 }
 
-export function setSessao(email) {
-  localStorage.setItem(SESSAO_KEY, email);
+export function clearAlunoAtual() {
+  alunoAtual = null;
 }
 
-export function getSessaoEmail() {
-  return localStorage.getItem(SESSAO_KEY);
-}
+let debounceTimer = null;
 
-export function clearSessao() {
-  localStorage.removeItem(SESSAO_KEY);
-}
-
-export function toggleVideoAssistido(email, temaId, videoIndex) {
-  const aluno = getAluno(email);
-  if (!aluno) return null;
+export function toggleVideoAssistidoLocal(temaId, videoIndex) {
+  if (!alunoAtual) return [];
   const chave = String(temaId);
-  const atual = aluno.progresso[chave] || [];
+  const atual = alunoAtual.progresso[chave] || [];
   const idx = atual.indexOf(videoIndex);
   const atualizado = idx === -1 ? [...atual, videoIndex] : atual.filter((i) => i !== videoIndex);
-  aluno.progresso[chave] = atualizado;
-  localStorage.setItem(ALUNO_PREFIX + email, JSON.stringify(aluno));
+  alunoAtual.progresso[chave] = atualizado;
   return atualizado;
 }
 
-export function getProgresso(email, temaId) {
-  const aluno = getAluno(email);
-  if (!aluno) return [];
-  return aluno.progresso[String(temaId)] || [];
+export function agendarSalvarProgresso(salvarFn) {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(salvarFn, 500);
+}
+
+export function getProgresso(temaId) {
+  if (!alunoAtual) return [];
+  return alunoAtual.progresso[String(temaId)] || [];
 }

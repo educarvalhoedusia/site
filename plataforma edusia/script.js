@@ -1,7 +1,18 @@
 import { decodeToken, buildPlanoDeAcao } from './logic.js';
-import { saveAluno, getAluno, setSessao, getSessaoEmail, clearSessao, toggleVideoAssistido, getProgresso } from './store.js';
+import { setAlunoAtual, getAlunoAtual, clearAlunoAtual, toggleVideoAssistidoLocal, agendarSalvarProgresso, getProgresso } from './store.js';
 
 const el = (id) => document.getElementById(id);
+
+async function api(path, options = {}) {
+  const resp = await fetch(path, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+    credentials: 'same-origin',
+  });
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) throw new Error(data.error || `Erro ${resp.status}`);
+  return data;
+}
 
 function mostrarTela(id) {
   ['tela-erro-token', 'tela-login', 'tela-dashboard'].forEach((t) => {
@@ -10,12 +21,6 @@ function mostrarTela(id) {
 }
 
 let planoAtual = null;
-
-async function carregarConfig() {
-  const resp = await fetch('config.json');
-  if (!resp.ok) throw new Error('config.json não encontrado');
-  return resp.json();
-}
 
 function renderDiscGrafico(disc) {
   const container = el('disc-grafico');
@@ -48,11 +53,22 @@ function renderPlanoAcao(plano) {
   `;
 }
 
-function renderTrilhas(trilhas, aluno) {
+async function salvarProgresso() {
+  const aluno = getAlunoAtual();
+  if (!aluno) return;
+  try {
+    await api('/api/aluno/progresso', { method: 'PUT', body: JSON.stringify({ progresso: aluno.progresso }) });
+  } catch (e) {
+    // falha silenciosa: o estado otimista local já foi aplicado; próxima
+    // interação tenta salvar de novo.
+  }
+}
+
+function renderTrilhas(trilhas) {
   const container = el('trilhas-lista');
   container.innerHTML = '';
   trilhas.forEach((tema) => {
-    const assistidos = getProgresso(aluno.email, tema.id);
+    const assistidos = getProgresso(tema.id);
     const card = document.createElement('div');
     card.className = 'trilha-card';
     const videosHtml = tema.videos
@@ -78,11 +94,12 @@ function renderTrilhas(trilhas, aluno) {
     cb.addEventListener('change', (ev) => {
       const temaId = Number(ev.target.dataset.tema);
       const videoIndex = Number(ev.target.dataset.video);
-      toggleVideoAssistido(aluno.email, temaId, videoIndex);
+      toggleVideoAssistidoLocal(temaId, videoIndex);
       const tema = trilhas.find((t) => t.id === temaId);
       const item = ev.target.closest('.trilha-card');
-      const assistidos = getProgresso(aluno.email, temaId);
+      const assistidos = getProgresso(temaId);
       item.querySelector('.trilha-progresso').textContent = `${assistidos.length} de ${tema.videos.length} assistidos`;
+      agendarSalvarProgresso(salvarProgresso);
     });
   });
 }
@@ -127,31 +144,11 @@ function gerarPdf() {
   }
 }
 
-function tratarToken() {
-  const hash = window.location.hash;
-  const match = hash.match(/#\/t=(.+)/);
-  if (!match) return false;
-  try {
-    const payload = decodeToken(decodeURIComponent(match[1]));
-    saveAluno(payload);
-    setSessao(payload.email);
-    history.replaceState(null, '', window.location.pathname);
-    return true;
-  } catch (e) {
-    mostrarTela('tela-erro-token');
-    return 'erro';
-  }
-}
-
-async function renderDashboard(email) {
-  const aluno = getAluno(email);
-  if (!aluno) {
-    mostrarTela('tela-login');
-    return;
-  }
+async function renderDashboard() {
+  const aluno = getAlunoAtual();
   let config;
   try {
-    config = await carregarConfig();
+    config = await api('/api/config');
   } catch (e) {
     el('tela-dashboard').innerHTML = '<p class="erro">Conteúdo não pôde ser carregado. Tente novamente mais tarde.</p>';
     mostrarTela('tela-dashboard');
@@ -161,32 +158,64 @@ async function renderDashboard(email) {
   renderDiscGrafico(aluno.disc);
   planoAtual = buildPlanoDeAcao(config, aluno.disc);
   renderPlanoAcao(planoAtual);
-  renderTrilhas(planoAtual.trilhas, aluno);
+  renderTrilhas(planoAtual.trilhas);
   el('usuario-nome').textContent = aluno.nome;
   el('usuario-info').hidden = false;
   mostrarTela('tela-dashboard');
 }
 
+async function carregarSessaoEDashboard() {
+  try {
+    const me = await api('/api/aluno/me');
+    setAlunoAtual(me);
+    await renderDashboard();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function tratarToken() {
+  const hash = window.location.hash;
+  const match = hash.match(/#\/t=(.+)/);
+  if (!match) return false;
+  let payload;
+  try {
+    payload = decodeToken(decodeURIComponent(match[1]));
+  } catch (e) {
+    mostrarTela('tela-erro-token');
+    return 'erro';
+  }
+  try {
+    await api('/api/aluno/token-login', { method: 'POST', body: JSON.stringify({ email: payload.email, senha: payload.senha }) });
+    history.replaceState(null, '', window.location.pathname);
+    return true;
+  } catch (e) {
+    mostrarTela('tela-erro-token');
+    return 'erro';
+  }
+}
+
 function iniciarLogin() {
-  el('form-login').addEventListener('submit', (ev) => {
+  el('form-login').addEventListener('submit', async (ev) => {
     ev.preventDefault();
     const email = el('login-email').value.trim();
     const senha = el('login-senha').value;
-    const aluno = getAluno(email);
-    if (!aluno || aluno.senha !== senha) {
+    try {
+      await api('/api/aluno/login', { method: 'POST', body: JSON.stringify({ email, senha }) });
+      el('login-erro').hidden = true;
+      await carregarSessaoEDashboard();
+    } catch (e) {
       el('login-erro').textContent = 'Email ou senha inválidos.';
       el('login-erro').hidden = false;
-      return;
     }
-    el('login-erro').hidden = true;
-    setSessao(email);
-    renderDashboard(email);
   });
 }
 
 function iniciarLogout() {
-  el('btn-logout').addEventListener('click', () => {
-    clearSessao();
+  el('btn-logout').addEventListener('click', async () => {
+    await api('/api/aluno/logout', { method: 'POST' }).catch(() => {});
+    clearAlunoAtual();
     el('usuario-info').hidden = true;
     mostrarTela('tela-login');
   });
@@ -198,18 +227,14 @@ async function init() {
   el('btn-pdf').addEventListener('click', gerarPdf);
   el('btn-ir-login').addEventListener('click', () => mostrarTela('tela-login'));
 
-  const resultadoToken = tratarToken();
+  const resultadoToken = await tratarToken();
   if (resultadoToken === 'erro') return;
   if (resultadoToken === true) {
-    await renderDashboard(getSessaoEmail());
+    await carregarSessaoEDashboard();
     return;
   }
-  const emailSessao = getSessaoEmail();
-  if (emailSessao && getAluno(emailSessao)) {
-    await renderDashboard(emailSessao);
-  } else {
-    mostrarTela('tela-login');
-  }
+  const logado = await carregarSessaoEDashboard();
+  if (!logado) mostrarTela('tela-login');
 }
 
 init();
