@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portal IA na Prática — EdusIA</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header class="topo">
+  <div class="logo">EdusIA</div>
+  <div id="usuario-info" class="usuario-info" hidden>
+    <span id="usuario-nome"></span>
+    <button id="btn-logout" class="btn-link">Sair</button>
+  </div>
+</header>
+
+<main class="container">
+  <section id="tela-erro-token" class="card" hidden>
+    <h2>Link inválido</h2>
+    <p>Este link de acesso não é válido ou expirou. Você pode tentar entrar com email e senha abaixo.</p>
+  </section>
+
+  <section id="tela-login" class="card login-card" hidden>
+    <h1>Entrar</h1>
+    <form id="form-login">
+      <label for="login-email">Email
+        <input type="email" id="login-email" required />
+      </label>
+      <label for="login-senha">Senha
+        <input type="password" id="login-senha" required />
+      </label>
+      <p id="login-erro" class="erro" hidden></p>
+      <button type="submit" class="btn btn-primario">Entrar</button>
+    </form>
+  </section>
+
+  <section id="tela-dashboard" hidden>
+    <section class="card resumo-disc">
+      <h1>Olá, <span id="dash-nome"></span>!</h1>
+      <div id="disc-grafico" class="disc-grafico"></div>
+      <div id="plano-acao" class="plano-acao"></div>
+      <button id="btn-pdf" class="btn btn-secundario">Baixar Plano de Ação em PDF</button>
+      <p id="pdf-erro" class="erro" hidden></p>
+    </section>
+
+    <section class="trilhas">
+      <h2>Suas Trilhas</h2>
+      <div id="trilhas-lista" class="trilhas-grid"></div>
+    </section>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script type="module" src="script.js"></script>
+</body>
+</html>
