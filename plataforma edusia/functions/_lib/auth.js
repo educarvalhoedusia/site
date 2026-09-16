@@ -104,3 +104,10 @@ export function parseCookies(cookieHeader) {
     })
   );
 }
+
+export async function authenticateAluno(db, email, senha) {
+  const { getAlunoByEmail } = await import('./db.js');
+  const aluno = await getAlunoByEmail(db, email);
+  if (!aluno || !(await verifyPassword(senha, aluno.senhaHash))) return null;
+  return aluno;
+}
