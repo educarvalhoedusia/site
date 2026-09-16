@@ -1,0 +1,4 @@
+node_modules/
+.ftp-credentials.json
+aovivo-site/config.php
+.worktrees/
