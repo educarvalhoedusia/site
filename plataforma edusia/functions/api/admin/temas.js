@@ -15,7 +15,7 @@ export async function onRequestPut({ request, env }) {
     return Response.json({ error: 'Campo "temas" deve ser uma lista.' }, { status: 400 });
   }
   for (const tema of body.temas) {
-    if (typeof tema.id !== 'number' || typeof tema.nome !== 'string') {
+    if (!tema || typeof tema.id !== 'number' || typeof tema.nome !== 'string') {
       return Response.json({ error: 'Cada tema precisa de "id" numérico e "nome" texto.' }, { status: 400 });
     }
   }

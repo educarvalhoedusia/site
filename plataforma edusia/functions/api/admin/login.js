@@ -15,7 +15,15 @@ export async function onRequestPost({ request, env }) {
     return Response.json({ error: 'Usuário e senha são obrigatórios.' }, { status: 400 });
   }
 
-  await ensureAdminSeed(env.DB, env);
+  if (!env.SESSION_SECRET) {
+    return Response.json({ error: 'Configuração do servidor incompleta (SESSION_SECRET ausente).' }, { status: 500 });
+  }
+
+  try {
+    await ensureAdminSeed(env.DB, env);
+  } catch (e) {
+    return Response.json({ error: 'Configuração do servidor incompleta (admin inicial não configurado).' }, { status: 500 });
+  }
   const admin = await getAdminByUsuario(env.DB, usuario);
   if (!admin || !(await verifyPassword(senha, admin.senhaHash))) {
     return Response.json({ error: 'Usuário ou senha inválidos.' }, { status: 401 });

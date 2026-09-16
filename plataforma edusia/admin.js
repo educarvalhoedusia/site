@@ -20,8 +20,21 @@ async function api(path, options = {}) {
     credentials: 'same-origin',
   });
   const data = await resp.json().catch(() => ({}));
-  if (!resp.ok) throw new Error(data.error || `Erro ${resp.status}`);
+  if (!resp.ok) {
+    const err = new Error(data.error || `Erro ${resp.status}`);
+    err.status = resp.status;
+    throw err;
+  }
   return data;
+}
+
+function tratarSessaoExpirada(erroEl) {
+  el('admin-painel').hidden = true;
+  el('tela-login-admin').hidden = false;
+  const loginErroEl = el('admin-login-erro');
+  loginErroEl.textContent = 'Sessão expirada. Faça login novamente.';
+  loginErroEl.hidden = false;
+  if (erroEl) erroEl.hidden = true;
 }
 
 async function carregarConfig() {
@@ -31,6 +44,11 @@ async function carregarConfig() {
     renderTemas();
     renderMapeamento();
   } catch (e) {
+    if (e.status === 401) {
+      tratarSessaoExpirada();
+      return;
+    }
+    el('config-erro').classList.remove('success');
     el('config-erro').textContent = 'Não foi possível carregar o conteúdo. Recarregue a página.';
     el('config-erro').hidden = false;
   }
@@ -243,7 +261,15 @@ function iniciarSalvar() {
     try {
       await api('/api/admin/temas', { method: 'PUT', body: JSON.stringify({ temas: config.temas }) });
       await api('/api/admin/mapeamento', { method: 'PUT', body: JSON.stringify({ mapeamentoDisc: config.mapeamentoDisc }) });
+      erroEl.textContent = 'Alterações salvas.';
+      erroEl.classList.add('success');
+      erroEl.hidden = false;
     } catch (e) {
+      erroEl.classList.remove('success');
+      if (e.status === 401) {
+        tratarSessaoExpirada(erroEl);
+        return;
+      }
       erroEl.textContent = `Erro ao salvar: ${e.message}`;
       erroEl.hidden = false;
     }

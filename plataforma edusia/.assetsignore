@@ -1,0 +1,14 @@
+docs/
+schema.sql
+scripts/
+tests/
+package.json
+package-lock.json
+wrangler.toml
+.dev.vars
+.gitignore
+.assetsignore
+node_modules/
+.wrangler/
+config.json
+README.md

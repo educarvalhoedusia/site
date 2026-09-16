@@ -10,7 +10,7 @@ export async function onRequestGet({ request, env }) {
     email: a.email,
     nome: a.nome,
     criadoEm: a.criadoEm,
-    videosAssistidos: Object.values(a.progresso).reduce((soma, lista) => soma + lista.length, 0),
+    videosAssistidos: Object.values(a.progresso || {}).reduce((soma, lista) => soma + (Array.isArray(lista) ? lista.length : 0), 0),
   }));
   return Response.json({ alunos: resumo });
 }

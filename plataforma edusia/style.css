@@ -123,6 +123,10 @@ textarea {
   font-size: 0.9rem;
 }
 
+.erro.success {
+  color: var(--verde);
+}
+
 .disc-grafico {
   margin: 16px 0;
 }

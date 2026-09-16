@@ -11,7 +11,7 @@ export async function onRequestPut({ request, env }) {
   } catch (e) {
     return Response.json({ error: 'Requisição inválida.' }, { status: 400 });
   }
-  if (!body || typeof body.progresso !== 'object') {
+  if (!body || typeof body.progresso !== 'object' || body.progresso === null || Array.isArray(body.progresso)) {
     return Response.json({ error: 'Campo "progresso" é obrigatório.' }, { status: 400 });
   }
 

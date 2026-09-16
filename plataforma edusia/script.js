@@ -10,7 +10,11 @@ async function api(path, options = {}) {
     credentials: 'same-origin',
   });
   const data = await resp.json().catch(() => ({}));
-  if (!resp.ok) throw new Error(data.error || `Erro ${resp.status}`);
+  if (!resp.ok) {
+    const err = new Error(data.error || `Erro ${resp.status}`);
+    err.status = resp.status;
+    throw err;
+  }
   return data;
 }
 
@@ -59,8 +63,16 @@ async function salvarProgresso() {
   try {
     await api('/api/aluno/progresso', { method: 'PUT', body: JSON.stringify({ progresso: aluno.progresso }) });
   } catch (e) {
-    // falha silenciosa: o estado otimista local já foi aplicado; próxima
-    // interação tenta salvar de novo.
+    if (e.status === 401) {
+      clearAlunoAtual();
+      mostrarTela('tela-login');
+      const erroEl = el('login-erro');
+      erroEl.textContent = 'Sua sessão expirou. Faça login novamente para continuar.';
+      erroEl.hidden = false;
+      return;
+    }
+    // falha silenciosa para demais erros: o estado otimista local já foi
+    // aplicado; próxima interação tenta salvar de novo.
   }
 }
 

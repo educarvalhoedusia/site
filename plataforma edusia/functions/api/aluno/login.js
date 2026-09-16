@@ -14,6 +14,10 @@ export async function onRequestPost({ request, env }) {
     return Response.json({ error: 'Email e senha são obrigatórios.' }, { status: 400 });
   }
 
+  if (!env.SESSION_SECRET) {
+    return Response.json({ error: 'Configuração do servidor incompleta (SESSION_SECRET ausente).' }, { status: 500 });
+  }
+
   const aluno = await authenticateAluno(env.DB, email, senha);
   if (!aluno) {
     return Response.json({ error: 'Email ou senha inválidos.' }, { status: 401 });
