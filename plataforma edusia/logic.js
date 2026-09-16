@@ -37,3 +37,35 @@ export function decodeToken(token) {
   }
   return payload;
 }
+
+export function dominantProfile(disc) {
+  const order = ['D', 'I', 'S', 'C'];
+  let best = order[0];
+  for (const key of order) {
+    if (disc[key] > disc[best]) best = key;
+  }
+  return best;
+}
+
+export function validateDiscResult(obj) {
+  const errors = [];
+  if (!obj || typeof obj !== 'object') {
+    return { valid: false, errors: ['JSON inválido'] };
+  }
+  if (!obj.nome || typeof obj.nome !== 'string' || !obj.nome.trim()) {
+    errors.push('Campo "nome" é obrigatório');
+  }
+  if (!obj.email || typeof obj.email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(obj.email)) {
+    errors.push('Campo "email" inválido ou ausente');
+  }
+  if (!obj.disc || typeof obj.disc !== 'object') {
+    errors.push('Campo "disc" é obrigatório');
+  } else {
+    for (const key of ['D', 'I', 'S', 'C']) {
+      if (typeof obj.disc[key] !== 'number' || Number.isNaN(obj.disc[key])) {
+        errors.push(`Campo "disc.${key}" deve ser numérico`);
+      }
+    }
+  }
+  return { valid: errors.length === 0, errors };
+}
