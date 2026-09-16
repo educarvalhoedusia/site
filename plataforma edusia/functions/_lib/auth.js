@@ -75,7 +75,12 @@ export async function verifySession(cookieValue, secret) {
   if (!cookieValue || !cookieValue.includes('.')) return null;
   const [encodedPayload, signature] = cookieValue.split('.');
   const expected = await hmac(secret, encodedPayload);
-  if (expected !== signature) return null;
+  if (expected.length !== signature.length) return null;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) {
+    diff |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
+  }
+  if (diff !== 0) return null;
   let payload;
   try {
     payload = JSON.parse(new TextDecoder().decode(fromBase64url(encodedPayload)));
