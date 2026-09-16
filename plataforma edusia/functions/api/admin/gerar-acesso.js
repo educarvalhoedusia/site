@@ -29,7 +29,7 @@ export async function onRequestPost({ request, env }) {
   await createAluno(env.DB, { email: dados.email, nome: dados.nome, senhaHash, disc: dados.disc, criadoEm: geradoEm });
 
   const token = encodeToken({ nome: dados.nome, email: dados.email, senha, disc: dados.disc, geradoEm });
-  const baseUrl = new URL('index.html', request.url).href;
+  const baseUrl = new URL('/index.html', request.url).href;
   const link = `${baseUrl}#/t=${token}`;
 
   return Response.json({ link, email: dados.email, senha });
