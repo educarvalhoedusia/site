@@ -12,38 +12,57 @@
 </header>
 
 <main class="container">
-  <nav class="admin-tabs">
-    <button class="tab-btn ativo" data-tab="tab-temas">Temas</button>
-    <button class="tab-btn" data-tab="tab-mapeamento">Mapeamento DISC</button>
-    <button class="tab-btn" data-tab="tab-gerar-acesso">Gerar Acesso</button>
-  </nav>
-
-  <p id="config-erro" class="erro" hidden></p>
-  <p class="aviso-card">Lembre-se de clicar em "Baixar config.json" antes de sair — edições não salvas se perdem ao recarregar a página.</p>
-
-  <section id="tab-temas" class="admin-secao">
-    <div id="temas-lista"></div>
-    <button id="btn-add-tema" class="btn btn-secundario">Adicionar tema</button>
+  <section id="tela-login-admin" class="admin-secao">
+    <h2>Login administrador</h2>
+    <label for="admin-usuario">Usuário</label>
+    <input type="email" id="admin-usuario" autocomplete="username" />
+    <label for="admin-senha">Senha</label>
+    <input type="password" id="admin-senha" autocomplete="current-password" />
+    <p id="admin-login-erro" class="erro" hidden></p>
+    <button id="btn-admin-login" class="btn btn-primario">Entrar</button>
   </section>
 
-  <section id="tab-mapeamento" class="admin-secao" hidden>
-    <div id="mapeamento-lista"></div>
-  </section>
-
-  <section id="tab-gerar-acesso" class="admin-secao" hidden>
-    <h2>Gerar acesso a partir do resultado DISC</h2>
-    <label for="json-disc-input">Cole aqui o JSON do resultado DISC</label>
-    <textarea id="json-disc-input" rows="8" placeholder='{"nome":"João Silva","email":"joao@example.com","disc":{"D":80,"I":40,"S":30,"C":20}}'></textarea>
-    <p id="gerar-acesso-erro" class="erro" hidden></p>
-    <button id="btn-gerar-acesso" class="btn btn-primario">Gerar link do aluno</button>
-    <div id="acesso-resultado" class="acesso-resultado" hidden>
-      <p><strong>Link:</strong> <span id="resultado-link"></span> <button id="btn-copiar-link" class="btn-link">Copiar</button></p>
-      <p><strong>Email:</strong> <span id="resultado-email"></span></p>
-      <p><strong>Senha:</strong> <span id="resultado-senha"></span></p>
+  <div id="admin-painel" hidden>
+    <div class="admin-header">
+      <button id="btn-admin-logout" class="btn-link">Sair</button>
     </div>
-  </section>
+    <nav class="admin-tabs">
+      <button class="tab-btn ativo" data-tab="tab-temas">Temas</button>
+      <button class="tab-btn" data-tab="tab-mapeamento">Mapeamento DISC</button>
+      <button class="tab-btn" data-tab="tab-gerar-acesso">Gerar Acesso</button>
+      <button class="tab-btn" data-tab="tab-alunos">Alunos</button>
+    </nav>
 
-  <button id="btn-download-config" class="btn btn-primario btn-download">Baixar config.json</button>
+    <p id="config-erro" class="erro" hidden></p>
+
+    <section id="tab-temas" class="admin-secao">
+      <div id="temas-lista"></div>
+      <button id="btn-add-tema" class="btn btn-secundario">Adicionar tema</button>
+    </section>
+
+    <section id="tab-mapeamento" class="admin-secao" hidden>
+      <div id="mapeamento-lista"></div>
+    </section>
+
+    <section id="tab-gerar-acesso" class="admin-secao" hidden>
+      <h2>Gerar acesso a partir do resultado DISC</h2>
+      <label for="json-disc-input">Cole aqui o JSON do resultado DISC</label>
+      <textarea id="json-disc-input" rows="8" placeholder='{"nome":"João Silva","email":"joao@example.com","disc":{"D":80,"I":40,"S":30,"C":20}}'></textarea>
+      <p id="gerar-acesso-erro" class="erro" hidden></p>
+      <button id="btn-gerar-acesso" class="btn btn-primario">Gerar link do aluno</button>
+      <div id="acesso-resultado" class="acesso-resultado" hidden>
+        <p><strong>Link:</strong> <span id="resultado-link"></span> <button id="btn-copiar-link" class="btn-link">Copiar</button></p>
+        <p><strong>Email:</strong> <span id="resultado-email"></span></p>
+        <p><strong>Senha:</strong> <span id="resultado-senha"></span></p>
+      </div>
+    </section>
+
+    <section id="tab-alunos" class="admin-secao" hidden>
+      <div id="alunos-lista"></div>
+    </section>
+
+    <button id="btn-salvar-config" class="btn btn-primario btn-download">Salvar</button>
+  </div>
 </main>
 
 <script type="module" src="admin.js"></script>

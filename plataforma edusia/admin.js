@@ -1,19 +1,28 @@
-import { generatePassword, encodeToken, validateDiscResult } from './logic.js';
+import { validateDiscResult } from './logic.js';
 
 const el = (id) => document.getElementById(id);
 let config = { temas: [], mapeamentoDisc: {} };
 let configCarregado = false;
 
+async function api(path, options = {}) {
+  const resp = await fetch(path, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+    credentials: 'same-origin',
+  });
+  const data = await resp.json().catch(() => ({}));
+  if (!resp.ok) throw new Error(data.error || `Erro ${resp.status}`);
+  return data;
+}
+
 async function carregarConfig() {
   try {
-    const resp = await fetch('config.json');
-    if (!resp.ok) throw new Error('config.json não encontrado');
-    config = await resp.json();
+    config = await api('/api/config');
     configCarregado = true;
     renderTemas();
     renderMapeamento();
   } catch (e) {
-    el('config-erro').textContent = 'Não foi possível carregar config.json. Confira se você está servindo os arquivos por HTTP (não abra admin.html direto como file://) e recarregue a página.';
+    el('config-erro').textContent = 'Não foi possível carregar o conteúdo. Recarregue a página.';
     el('config-erro').hidden = false;
   }
 }
@@ -156,21 +165,34 @@ function ligarEventosMapeamento() {
   });
 }
 
+async function renderAlunos() {
+  const container = el('alunos-lista');
+  try {
+    const { alunos } = await api('/api/admin/alunos');
+    container.innerHTML = alunos.length
+      ? `<table class="tabela-alunos"><thead><tr><th>Nome</th><th>Email</th><th>Criado em</th><th>Vídeos assistidos</th></tr></thead><tbody>${alunos
+          .map((a) => `<tr><td>${a.nome}</td><td>${a.email}</td><td>${new Date(a.criadoEm).toLocaleDateString('pt-BR')}</td><td>${a.videosAssistidos}</td></tr>`)
+          .join('')}</tbody></table>`
+      : '<p>Nenhum aluno cadastrado ainda.</p>';
+  } catch (e) {
+    container.innerHTML = '<p class="erro">Não foi possível carregar a lista de alunos.</p>';
+  }
+}
+
 function iniciarTabs() {
   document.querySelectorAll('.tab-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('ativo'));
-      document.querySelectorAll('.admin-secao').forEach((s) => {
-        s.hidden = true;
-      });
+      document.querySelectorAll('.admin-secao').forEach((s) => { s.hidden = true; });
       btn.classList.add('ativo');
       el(btn.dataset.tab).hidden = false;
+      if (btn.dataset.tab === 'tab-alunos') renderAlunos();
     });
   });
 }
 
 function iniciarGerarAcesso() {
-  el('btn-gerar-acesso').addEventListener('click', () => {
+  el('btn-gerar-acesso').addEventListener('click', async () => {
     const erroEl = el('gerar-acesso-erro');
     erroEl.hidden = true;
     let dados;
@@ -187,15 +209,16 @@ function iniciarGerarAcesso() {
       erroEl.hidden = false;
       return;
     }
-    const senha = generatePassword();
-    const payload = { nome: dados.nome, email: dados.email, senha, disc: dados.disc, geradoEm: new Date().toISOString() };
-    const token = encodeToken(payload);
-    const baseUrl = new URL('index.html', window.location.href).href;
-    const link = `${baseUrl}#/t=${token}`;
-    el('resultado-link').textContent = link;
-    el('resultado-email').textContent = dados.email;
-    el('resultado-senha').textContent = senha;
-    el('acesso-resultado').hidden = false;
+    try {
+      const resultado = await api('/api/admin/gerar-acesso', { method: 'POST', body: JSON.stringify(dados) });
+      el('resultado-link').textContent = resultado.link;
+      el('resultado-email').textContent = resultado.email;
+      el('resultado-senha').textContent = resultado.senha;
+      el('acesso-resultado').hidden = false;
+    } catch (e) {
+      erroEl.textContent = e.message;
+      erroEl.hidden = false;
+    }
   });
 
   el('btn-copiar-link').addEventListener('click', () => {
@@ -203,39 +226,57 @@ function iniciarGerarAcesso() {
   });
 }
 
-function iniciarDownload() {
-  el('btn-download-config').addEventListener('click', () => {
-    if (!configCarregado) {
-      el('config-erro').textContent = 'Nada para baixar — config.json não foi carregado. Recarregue a página servida por HTTP.';
-      el('config-erro').hidden = false;
-      return;
+function iniciarSalvar() {
+  el('btn-salvar-config').addEventListener('click', async () => {
+    const erroEl = el('config-erro');
+    erroEl.hidden = true;
+    if (!configCarregado) return;
+    try {
+      await api('/api/admin/temas', { method: 'PUT', body: JSON.stringify({ temas: config.temas }) });
+      await api('/api/admin/mapeamento', { method: 'PUT', body: JSON.stringify({ mapeamentoDisc: config.mapeamentoDisc }) });
+    } catch (e) {
+      erroEl.textContent = `Erro ao salvar: ${e.message}`;
+      erroEl.hidden = false;
     }
-    const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'config.json';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 0);
+  });
+}
+
+function mostrarPainel() {
+  el('tela-login-admin').hidden = true;
+  el('admin-painel').hidden = false;
+  carregarConfig();
+}
+
+function iniciarLoginAdmin() {
+  el('btn-admin-login').addEventListener('click', async () => {
+    const erroEl = el('admin-login-erro');
+    erroEl.hidden = true;
+    try {
+      await api('/api/admin/login', {
+        method: 'POST',
+        body: JSON.stringify({ usuario: el('admin-usuario').value.trim(), senha: el('admin-senha').value }),
+      });
+      mostrarPainel();
+    } catch (e) {
+      erroEl.textContent = e.message;
+      erroEl.hidden = false;
+    }
+  });
+
+  el('btn-admin-logout').addEventListener('click', async () => {
+    await api('/api/admin/logout', { method: 'POST' });
+    el('admin-painel').hidden = true;
+    el('tela-login-admin').hidden = false;
   });
 }
 
 el('btn-add-tema').addEventListener('click', () => {
-  config.temas.push({
-    id: proximoId(),
-    nome: 'Novo tema',
-    descricao: '',
-    icone: '⭐',
-    videos: [],
-    competenciasDesenvolvidas: [],
-  });
+  config.temas.push({ id: proximoId(), nome: 'Novo tema', descricao: '', icone: '⭐', videos: [], competenciasDesenvolvidas: [] });
   renderTemas();
   renderMapeamento();
 });
 
-carregarConfig();
+iniciarLoginAdmin();
 iniciarTabs();
 iniciarGerarAcesso();
-iniciarDownload();
+iniciarSalvar();
