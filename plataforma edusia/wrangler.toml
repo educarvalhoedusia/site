@@ -1,0 +1,10 @@
+name = "portal-ia-na-pratica"
+compatibility_date = "2026-09-16"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "edusia-portal-db"
+# Created via `npx wrangler d1 create edusia-portal-db` (remote DB, region ENAM)
+# using Cloudflare credentials available in this environment.
+database_id = "dda014b4-029b-4a39-8ea2-46de39f1793d"
