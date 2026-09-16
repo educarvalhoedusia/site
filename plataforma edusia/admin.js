@@ -5,6 +5,7 @@ async function carregarConfig() {
   const resp = await fetch('config.json');
   config = await resp.json();
   renderTemas();
+  renderMapeamento();
 }
 
 function proximoId() {
@@ -82,6 +83,77 @@ function ligarEventosTemas() {
   });
 }
 
+function renderMapeamento() {
+  const container = el('mapeamento-lista');
+  container.innerHTML = '';
+  ['D', 'I', 'S', 'C'].forEach((perfil) => {
+    const dados = config.mapeamentoDisc[perfil];
+    const div = document.createElement('div');
+    div.className = 'perfil-editor card';
+    const checkboxes = config.temas
+      .map((t) => `
+        <label class="checkbox-tema">
+          <input type="checkbox" data-perfil="${perfil}" data-tema-id="${t.id}" ${dados.temasRecomendados.includes(t.id) ? 'checked' : ''} />
+          ${t.icone} ${t.nome}
+        </label>
+      `)
+      .join('');
+    div.innerHTML = `
+      <h3>Perfil ${perfil}</h3>
+      <label>Pontos fracos (separados por vírgula)
+        <input type="text" value="${dados.pontosFracos.join(', ')}" data-perfil="${perfil}" data-field="pontosFracos" />
+      </label>
+      <label>Mensagem
+        <textarea data-perfil="${perfil}" data-field="mensagem">${dados.mensagem}</textarea>
+      </label>
+      <fieldset>
+        <legend>Temas recomendados</legend>
+        ${checkboxes}
+      </fieldset>
+    `;
+    container.appendChild(div);
+  });
+  ligarEventosMapeamento();
+}
+
+function ligarEventosMapeamento() {
+  const container = el('mapeamento-lista');
+  container.querySelectorAll('input[data-field], textarea[data-field]').forEach((input) => {
+    input.addEventListener('input', (ev) => {
+      const perfil = ev.target.dataset.perfil;
+      const campo = ev.target.dataset.field;
+      if (campo === 'pontosFracos') {
+        config.mapeamentoDisc[perfil].pontosFracos = ev.target.value.split(',').map((s) => s.trim()).filter(Boolean);
+      } else {
+        config.mapeamentoDisc[perfil][campo] = ev.target.value;
+      }
+    });
+  });
+  container.querySelectorAll('input[data-tema-id]').forEach((cb) => {
+    cb.addEventListener('change', (ev) => {
+      const perfil = ev.target.dataset.perfil;
+      const temaId = Number(ev.target.dataset.temaId);
+      const lista = config.mapeamentoDisc[perfil].temasRecomendados;
+      const idx = lista.indexOf(temaId);
+      if (ev.target.checked && idx === -1) lista.push(temaId);
+      if (!ev.target.checked && idx !== -1) lista.splice(idx, 1);
+    });
+  });
+}
+
+function iniciarTabs() {
+  document.querySelectorAll('.tab-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('ativo'));
+      document.querySelectorAll('.admin-secao').forEach((s) => {
+        s.hidden = true;
+      });
+      btn.classList.add('ativo');
+      el(btn.dataset.tab).hidden = false;
+    });
+  });
+}
+
 el('btn-add-tema').addEventListener('click', () => {
   config.temas.push({
     id: proximoId(),
@@ -95,3 +167,4 @@ el('btn-add-tema').addEventListener('click', () => {
 });
 
 carregarConfig();
+iniciarTabs();
