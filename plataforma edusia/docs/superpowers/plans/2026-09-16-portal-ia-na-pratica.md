@@ -719,7 +719,7 @@ Run: `node --test tests/store.test.js`
 Expected: PASS (5 tests).
 
 Then run the full suite: `node --test tests/`
-Expected: PASS (20 tests total across config/logic/store).
+Expected: PASS (21 tests total across config/logic/store).
 
 - [ ] **Step 5: Commit**
 
@@ -2024,7 +2024,7 @@ git commit -m "Add README with editing, integration, hosting and testing docs"
 - [ ] **Step 1: Run the full automated test suite**
 
 Run: `node --test tests/`
-Expected: PASS, 0 failures (20 tests from Tasks 1–5).
+Expected: PASS, 0 failures (21 tests from Tasks 1–5).
 
 - [ ] **Step 2: Run through the spec's manual verification checklist**
 
