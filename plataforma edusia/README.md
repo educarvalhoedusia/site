@@ -1,36 +1,41 @@
 # Portal "IA na Prática" — EdusIA
 
 Portal de trilhas de treinamento em IA, personalizado pelo resultado DISC de
-cada aluno. Site 100% estático (HTML/CSS/JS puro), sem backend, sem build
-step — hospedável em qualquer hosting estático (ex.: Cloudflare Pages).
+cada aluno. Frontend estático (HTML/CSS/JS puro, sem build step) com um
+backend em Cloudflare Pages Functions + banco D1 — hospedável no Cloudflare
+Pages, que publica os dois juntos a cada push.
 
 ## Como funciona
 
-- **Conteúdo** (temas/trilhas e recomendações por perfil DISC) vive em
-  `config.json`, editado pelo painel admin.
-- **Identidade do aluno** vive dentro do próprio link de acesso: um token
-  Base64 (`index.html#/t=...`) que carrega nome, email, senha e resultado
-  DISC. Não existe uma lista central de alunos — cada aluno só existe no
-  link que recebeu e no `localStorage` do navegador onde ele acessou esse
-  link pela primeira vez.
+- **Conteúdo** (temas/trilhas e recomendações por perfil DISC) vive no banco
+  D1 (tabelas `temas` e `mapeamento_disc`), editado e salvo direto pelo
+  painel admin (botão "Salvar" nas abas Temas/Mapeamento DISC), sem precisar
+  de redeploy.
+- **Identidade do aluno** é gerada a partir do resultado DISC e persistida
+  numa tabela central `alunos` no D1 — o cadastro existe no banco, não só no
+  link. O link de acesso (`index.html#/t=...`, um token Base64) ainda carrega
+  nome, email, senha e resultado DISC para permitir o primeiro acesso sem
+  digitar senha; depois disso o aluno pode entrar com email + senha em
+  qualquer navegador ou dispositivo, pois a autenticação é validada contra o
+  D1 (não depende de `localStorage`).
 
 ## Como editar os temas e o mapeamento DISC
 
-1. Abra `admin.html` (a URL não é divulgada publicamente — trate como uma
-   URL secreta, não há senha própria de admin).
+1. Abra `admin.html` e faça login com o usuário/senha configurados em
+   `ADMIN_SEED_USER`/`ADMIN_SEED_PASSWORD` (veja "Como hospedar" e "Rodando
+   localmente" abaixo).
 2. Na aba **Temas**: edite nome, ícone, descrição, competências e vídeos de
    cada trilha; adicione ou remova temas e vídeos livremente.
 3. Na aba **Mapeamento DISC**: para cada perfil (D, I, S, C), edite os
    pontos fracos, a mensagem personalizada e quais temas são recomendados
    (marcando as caixas).
-4. Clique em **"Baixar config.json"** — isso baixa o arquivo com todas as
-   edições. Substitua o `config.json` do projeto por esse arquivo baixado e
-   refaça o deploy do site (mesmo processo que você já usa nos outros
-   projetos).
+4. Clique em **"Salvar"** — isso grava as edições direto no banco D1 via API.
+   Não é preciso baixar nenhum arquivo, substituir `config.json` nem refazer
+   o deploy do site.
 
-**Importante:** as edições no admin só existem na memória da página. Se você
-recarregar `admin.html` sem clicar em "Baixar config.json", perde as
-edições não salvas.
+**Importante:** as edições no admin só existem na memória da página até você
+clicar em "Salvar". Se você recarregar `admin.html` antes de salvar, perde
+as edições pendentes.
 
 ## Como gerar o acesso de um aluno (integração com o DISC)
 
@@ -51,8 +56,10 @@ edições não salvas.
    do aluno. Copie o link (botão "Copiar") e a senha, e envie ao aluno
    (WhatsApp, email — fora do escopo deste sistema).
 4. O aluno abre o link e cai direto no dashboard dele — sem precisar digitar
-   senha na primeira vez. Em acessos futuros, no mesmo navegador, ele usa
-   email + a senha gerada.
+   senha na primeira vez. Em acessos futuros, em **qualquer** navegador ou
+   dispositivo, ele entra com email + a senha gerada (a autenticação é
+   validada contra o cadastro no D1, não depende do navegador usado no
+   primeiro acesso).
 
 Gerar um acesso **não** exige redeploy do site — o link funciona assim que é
 gerado, independente do que está publicado.
@@ -120,7 +127,9 @@ O restante (telas, formulários, PDF) é verificado manualmente em navegador
 }
 ```
 
-**Trecho de `config.json`** (um tema editável):
+**Trecho de `config.json`** (formato de um tema — usado como dado de seed
+inicial pelo `scripts/seed-d1.js`; a edição em produção não passa mais por
+esse arquivo, e sim pelo painel admin/D1, mas o formato do objeto é o mesmo):
 
 ```json
 {
