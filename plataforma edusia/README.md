@@ -95,7 +95,7 @@ npm install
 npx wrangler d1 create edusia-portal-db   # uma vez, copiar o id para wrangler.toml
 npx wrangler d1 execute edusia-portal-db --local --file=schema.sql
 npm run db:seed
-npx wrangler pages dev . --d1=DB=edusia-portal-db --compatibility-date=2026-09-16
+npx wrangler pages dev . --compatibility-date=2026-09-16 --port=8788
 ```
 
 Crie um `.dev.vars` (não versionado) com `SESSION_SECRET`,
